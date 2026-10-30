@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7713e17163c38a44f9ecce308cc50a05, type: 3}
+  m_Name: Drop In
+  m_EditorClassIdentifier: RiseOn.Transitions.Editor::RiseOn.Transitions.Editor.TransitionTargetPreset
+  target:
+    rid: 4316843818643620333
+  references:
+    version: 2
+    RefIds:
+    - rid: 4316843818643620333
+      type: {class: 'TransitionTarget`1[[UnityEngine.RectTransform, UnityEngine.CoreModule]]', ns: RiseOn.Transitions, asm: RiseOn.Transitions}
+      data:
+        label: Body
+        target:
+          value: {fileID: 0}
+        nodes:
+          items:
+          - value:
+              rid: 4316843818643620334
+    - rid: 4316843818643620334
+      type: {class: 'TransitionProperty`2[[UnityEngine.RectTransform, UnityEngine.CoreModule],[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: RiseOn.Transitions, asm: RiseOn.Transitions}
+      data:
+        member: anchoredPosition
+        customRest: 0
+        rest: {x: 0, y: 0}
+        modifier:
+          rid: 4316843818643620335
+    - rid: 4316843818643620335
+      type: {class: 'AdditionModifier`2[[UnityEngine.RectTransform, UnityEngine.CoreModule],[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: RiseOn.Transitions, asm: RiseOn.Transitions}
+      data:
+        source:
+          rid: 4316843818643620336
+    - rid: 4316843818643620336
+      type: {class: 'TweenSource`2[[UnityEngine.RectTransform, UnityEngine.CoreModule],[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: RiseOn.Transitions, asm: RiseOn.Transitions}
+      data:
+        from:
+          rid: 4316843818643620337
+        to:
+          rid: 4316843818643620338
+        range: {x: 0, y: 1}
+        ease:
+          ease: 29
+          curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+    - rid: 4316843818643620337
+      type: {class: OffsetSource, ns: RiseOn.Transitions, asm: RiseOn.Transitions}
+      data:
+        from:
+          direction: 2
+          customAngle: 90
+        distance: 2
+        units: 100
+    - rid: 4316843818643620338
+      type: {class: 'ConstantSource`1[[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: RiseOn.Transitions, asm: RiseOn.Transitions}
+      data:
+        value: {x: 0, y: 0}

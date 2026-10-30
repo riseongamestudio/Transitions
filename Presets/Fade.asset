@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7713e17163c38a44f9ecce308cc50a05, type: 3}
+  m_Name: Fade
+  m_EditorClassIdentifier: RiseOn.Transitions.Editor::RiseOn.Transitions.Editor.TransitionTargetPreset
+  target:
+    rid: 4316843818643620132
+  references:
+    version: 2
+    RefIds:
+    - rid: 4316843818643620132
+      type: {class: 'TransitionTarget`1[[UnityEngine.CanvasGroup, UnityEngine.UIModule]]', ns: RiseOn.Transitions, asm: RiseOn.Transitions}
+      data:
+        label: Group
+        target:
+          value: {fileID: 0}
+        nodes:
+          items:
+          - value:
+              rid: 4316843818643620133
+    - rid: 4316843818643620133
+      type: {class: 'TransitionProperty`2[[UnityEngine.CanvasGroup, UnityEngine.UIModule],[System.Single, mscorlib]]', ns: RiseOn.Transitions, asm: RiseOn.Transitions}
+      data:
+        member: alpha
+        customRest: 0
+        rest: 0
+        modifier:
+          rid: 4316843818643620134
+    - rid: 4316843818643620134
+      type: {class: 'MultiplicationModifier`2[[UnityEngine.CanvasGroup, UnityEngine.UIModule],[System.Single, mscorlib]]', ns: RiseOn.Transitions, asm: RiseOn.Transitions}
+      data:
+        source:
+          rid: 4316843818643620135
+    - rid: 4316843818643620135
+      type: {class: 'TweenSource`2[[UnityEngine.CanvasGroup, UnityEngine.UIModule],[System.Single, mscorlib]]', ns: RiseOn.Transitions, asm: RiseOn.Transitions}
+      data:
+        from:
+          rid: 4316843818643620136
+        to:
+          rid: 4316843818643620137
+        range: {x: 0, y: 1}
+        ease:
+          ease: 5
+          curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+    - rid: 4316843818643620136
+      type: {class: 'ConstantSource`1[[System.Single, mscorlib]]', ns: RiseOn.Transitions, asm: RiseOn.Transitions}
+      data:
+        value: 0
+    - rid: 4316843818643620137
+      type: {class: 'ConstantSource`1[[System.Single, mscorlib]]', ns: RiseOn.Transitions, asm: RiseOn.Transitions}
+      data:
+        value: 1

@@ -1,0 +1,23 @@
+{
+    "name": "RiseOn.Transitions",
+    "rootNamespace": "RiseOn.Transitions",
+    "references": [
+        "RiseOn.Serializables",
+        "LitMotion",
+        "UnityEngine.UI",
+        "RiseOn.Utils",
+        "RiseOn.Utils.LitMotion",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "ODIN_INSPECTOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,24 @@
+{
+    "name": "RiseOn.Transitions.Editor",
+    "rootNamespace": "RiseOn.Transitions.Editor",
+    "references": [
+        "RiseOn.Transitions",
+        "RiseOn.Serializables",
+        "RiseOn.Utils",
+        "RiseOn.Utils.Editor",
+        "LitMotion"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "ODIN_INSPECTOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
