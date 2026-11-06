@@ -73,6 +73,13 @@ namespace RiseOn.Transitions {
         }
 
         /// <summary>
+        /// A node's name as the Inspector shows it, written as C# writes a member of an interface: <c>IA.Value</c> for <c>IA/Value</c>.
+        /// </summary>
+        public static string GetDisplayName(string id) {
+            return id.Replace(DECLARING_SEPARATOR, '.');
+        }
+
+        /// <summary>
         /// How a branch names the properties <paramref name="hops"/> it follows from <paramref name="type"/>, such as <c>Root.Group</c>.
         /// </summary>
         public static string GetPathId(Type type, IEnumerable<PropertyInfo> hops) {

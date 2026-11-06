@@ -80,15 +80,18 @@ Chuột phải dòng đầu có *Save as Preset* (lưu thành `TransitionTargetP
 ## Node
 
 Nút + cuối dòng target (hay dòng nhánh, dòng đầu của target không object) mở cửa sổ chọn node:
+một danh sách theo tên member, như gợi ý khi gõ code, cả hai loại node nằm chung, kèm kiểu giá trị.
 
-- **Property**: các property public có get, set public của `T`, gom theo kiểu khai báo, kèm
-  kiểu giá trị. Property của `Object` và `Component` (`name`, `hideFlags`, `tag`) không có, vì
-  không chuyển cảnh nào ghi chúng. Property đã có thì mờ, không thêm trùng được; trùng có sẵn
-  (sửa tay, hay dữ liệu cũ) thì hiện cảnh báo.
-- **Nhánh**, trong thư mục Branch: các property public có get của `T` trả về object (không
-  tính chuỗi, mảng, delegate). Chọn một thì cửa sổ sang bước tiếp, tiêu đề là đường đi tới đó
+- **Property**: các property public có get, set public của `T`. Property của `Object` và
+  `Component` (`name`, `hideFlags`, `tag`) không có, vì không chuyển cảnh nào ghi chúng. Property
+  đã có thì mờ, không thêm trùng được; trùng có sẵn (sửa tay) thì hiện cảnh báo.
+- **Nhánh**, dòng có mũi tên: các property public có get của `T` trả về object (không tính chuỗi,
+  mảng, delegate). Chọn một thì cửa sổ sang bước tiếp, tiêu đề là đường đi tới đó
   (`IUIElement.RectTF`): dòng đầu *Branch Here* thêm nhánh dừng ở đó, các dòng sau đi tiếp
   một tầng nữa. Gõ tìm được ở mọi bước.
+
+Tên hiểu như trong C#: `T` có hai interface cha cùng khai báo `Value` thì có hai dòng `IA.Value`
+và `IB.Value`, tiêu đề node cũng ghi vậy.
 
 Dòng nhánh mang tiêu đề là đường đi (`RectTF.parent`), kiểu `U` mờ ở cuối dòng, rồi nút +
 thêm node trên object nhánh tới. Đường đi hỏng (đổi tên, xóa member, đổi kiểu) thì tiêu đề đỏ

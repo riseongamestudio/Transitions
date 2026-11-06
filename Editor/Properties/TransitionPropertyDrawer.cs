@@ -26,7 +26,7 @@ namespace RiseOn.Transitions.Editor {
             var member = ValueEntry.SmartValue.member;
             var error = FindError(member);
 
-            DrawHeader(new GUIContent(string.IsNullOrEmpty(member) ? "None" : member), error != null);
+            DrawHeader(new GUIContent(string.IsNullOrEmpty(member) ? "None" : MemberAccess.GetDisplayName(member)), error != null);
 
             // Not indented: the item already sets its fields apart, starting them under the middle of its handle.
             if (SirenixEditorGUI.BeginFadeGroup(this, Property.State.Expanded)) {

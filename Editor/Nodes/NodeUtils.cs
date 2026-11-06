@@ -13,11 +13,11 @@ using UnityEngine;
 namespace RiseOn.Transitions.Editor {
     /// <summary>
     /// What the Inspector does the same on every list of nodes: that of a target, a branch, or an unbound target.<br/>
-    /// Adding one picks it in one window listing, in a folder per type declaring them, both kinds of node:<br/>
+    /// Adding one picks it in one window listing, as one list by name as code completion does, both kinds of node:<br/>
     /// a property writing a member worth writing, those already written grayed out; and a branch following a member to an object,<br/>
     /// then step by step on from the type it reaches until Branch Here, its row showing the arrow of a folder.<br/>
     /// Every row shows the icon of the member's type, named in brackets after it.<br/>
-    /// Two interfaces declaring one name are two rows, each in the folder of its own.
+    /// Two interfaces declaring one name are two rows, each named with its interface, as <c>IA.Value</c>.
     /// </summary>
     internal static class NodeUtils {
         /// <summary>
@@ -41,7 +41,7 @@ namespace RiseOn.Transitions.Editor {
                 var steps = ListChoices(reached, null)
                     .Prepend(new SearchChoice<Pick>($"Branch Here   ({reached.GetNiceName()})", new Pick(null, true), icon: () => TargetTypeUtils.GetIcon(reached), labelSearch: "Branch Here"));
 
-                window.Present($"{type.GetNiceName()}.{path}", steps, (Pick next) => {
+                window.Present($"{type.GetNiceName()}.{MemberAccess.GetDisplayName(path)}", steps, (Pick next) => {
                     if (next.Member == null) {
                         add(() => TargetTypeUtils.CreateBranch(type, path, reached));
                         return;
@@ -54,22 +54,21 @@ namespace RiseOn.Transitions.Editor {
         }
 
         // The members of type a node starts from, by name, a property before a branch of the same name; the properties left out when written is null,
-        // as on a branch's later steps. A folder per declaring type, named and iconed after it, unless one type declares them all.
+        // as on a branch's later steps.
         private static IEnumerable<SearchChoice<Pick>> ListChoices(Type type, ICollection<string> written) {
             var properties = written == null ? Enumerable.Empty<Pick>() : TargetTypeUtils.ListMembers(type).Select(member => new Pick(member, false));
             var picks = properties
                 .Concat(MemberAccess.ListReadable(type).Select(member => new Pick(member, true)))
                 .OrderBy(pick => pick.Member.Name, StringComparer.Ordinal)
-                .ThenBy(pick => pick.IsBranch)
-                .ToList();
-            var isFoldered = picks.Select(pick => pick.Member.DeclaringType).Distinct().Skip(1).Any();
+                .ThenBy(pick => MemberAccess.GetId(type, pick.Member), StringComparer.Ordinal)
+                .ThenBy(pick => pick.IsBranch);
 
             return picks.Select(pick => {
                 var member = pick.Member;
-                var folder = isFoldered ? $"{member.DeclaringType.GetNiceName()}/" : string.Empty;
-                var disabled = !pick.IsBranch && written.Contains(MemberAccess.GetId(type, member)) ? "already written" : null;
-                return new SearchChoice<Pick>($"{folder}{member.Name}   ({member.PropertyType.GetNiceName()})", pick, disabled,
-                    () => TargetTypeUtils.GetIcon(member.PropertyType), folderIcon: () => TargetTypeUtils.GetIcon(member.DeclaringType), hasNextStep: pick.IsBranch);
+                var id = MemberAccess.GetId(type, member);
+                var disabled = !pick.IsBranch && written.Contains(id) ? "already written" : null;
+                return new SearchChoice<Pick>($"{MemberAccess.GetDisplayName(id)}   ({member.PropertyType.GetNiceName()})", pick, disabled,
+                    () => TargetTypeUtils.GetIcon(member.PropertyType), hasNextStep: pick.IsBranch);
             });
         }
 
@@ -89,7 +88,7 @@ namespace RiseOn.Transitions.Editor {
                 .Where(node => node is not IUntypedBranch && !string.IsNullOrEmpty(node.Name))
                 .GroupBy(node => node.Name)
                 .Where(group => group.Count() > 1)
-                .Select(group => group.Key)
+                .Select(group => MemberAccess.GetDisplayName(group.Key))
                 .ToList();
             if (duplicates.Count > 0) SirenixEditorGUI.WarningMessageBox($"{string.Join(", ", duplicates)}: written by more than one property, so the last one wins.");
         }

@@ -12,9 +12,10 @@ Mọi thay đổi đáng kể của `com.riseon.transitions` được ghi ở đ
   nghỉ và đường ghi: `A.Value` và `new Value` của lớp con `B` giờ ghi đúng member của mình.
   Override và property của interface vẫn tính là một member với thứ nó trỏ tới.
 - Tên member được hiểu như trong C#: `Value` trên kiểu có hai interface cha cùng khai báo là lỗi,
-  phải chọn rõ. **Add Property** liệt kê đủ cả hai, node lưu `IA/Value`, cả ở từng bước của nhánh;
+  phải chọn rõ. **Add Property** liệt kê đủ cả hai là `IA.Value` và `IB.Value`, cả ở từng bước của nhánh;
   code ép kiểu `x => ((IA)x).Value`, kể cả với property bị `new` che.
-- **Add Property**: dòng nhánh có mũi tên như thư mục, phân biệt với dòng property cùng tên.
+- **Add Property**: một danh sách theo tên, không chia thư mục theo kiểu khai báo. Dòng nhánh có
+  mũi tên như thư mục, phân biệt với dòng property cùng tên.
 - Ghi property trên lớp C# thường không còn cấp phát: dùng delegate nhận object ở mỗi lần gọi
   thay cho reflection, vẫn giữ object bằng tham chiếu yếu.
 

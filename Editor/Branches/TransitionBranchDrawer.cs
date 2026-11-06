@@ -29,7 +29,7 @@ namespace RiseOn.Transitions.Editor {
             var path = ValueEntry.SmartValue.path;
             var error = FindError(path);
 
-            DrawHeader(new GUIContent(string.IsNullOrEmpty(path) ? "None" : path), error != null);
+            DrawHeader(new GUIContent(string.IsNullOrEmpty(path) ? "None" : MemberAccess.GetDisplayName(path)), error != null);
 
             if (SirenixEditorGUI.BeginFadeGroup(this, Property.State.Expanded)) {
                 if (error != null) SirenixEditorGUI.ErrorMessageBox(error);

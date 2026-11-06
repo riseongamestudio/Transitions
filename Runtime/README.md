@@ -46,7 +46,7 @@ member, nên có hai giá trị; property của interface và lớp cài nó là
 Tên member được hiểu như trong C#, theo kiểu khai báo của target. Target kiểu lớp con thì `Value`
 là `new Value`, muốn `Value` của lớp cha thì để target kiểu lớp cha, hoặc ép kiểu trong code:
 `x => ((A)x).Value`. Interface kế thừa hai interface cùng có `Value` thì tên trần không chỉ tới
-cái nào, phải chọn rõ: Inspector có hai mục, node lưu `IA/Value`, code ép kiểu `x => ((IA)x).Value`.
+cái nào, phải chọn rõ: Inspector có hai dòng `IA.Value` và `IB.Value`, code ép kiểu `x => ((IA)x).Value`.
 
 Object phải đang ở trạng thái hiện xong lúc chuyển cảnh đầu tiên chạm vào nó: vừa sinh ra
 từ prefab chẳng hạn. Hai chuyển cảnh cùng ghi một member cùng lúc thì cái ghi sau thắng.

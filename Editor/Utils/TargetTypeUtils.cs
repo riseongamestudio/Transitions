@@ -65,7 +65,7 @@ namespace RiseOn.Transitions.Editor {
         public static List<string> FindLost(ITransitionTarget target, Type type) {
             var lost = new List<string>();
             foreach (var node in ((IUntypedTarget)target).Nodes) {
-                if (node is IUntypedNode moving && moving.Retarget(type) == null) lost.Add(moving.Name);
+                if (node is IUntypedNode moving && moving.Retarget(type) == null) lost.Add(MemberAccess.GetDisplayName(moving.Name));
             }
 
             return lost;
@@ -155,7 +155,7 @@ namespace RiseOn.Transitions.Editor {
                 }
 
                 var moved = moving.Retarget(type);
-                if (moved == null || !to.TryAdd(moved)) dropped.Add(moving.Name);
+                if (moved == null || !to.TryAdd(moved)) dropped.Add(MemberAccess.GetDisplayName(moving.Name));
             }
 
             return copy;
