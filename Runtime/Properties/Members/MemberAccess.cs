@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using UnityEngine.Scripting;
@@ -8,8 +9,9 @@ namespace RiseOn.Transitions {
     /// <summary>
     /// Finds the public properties transitions reach by name, and binds their access to one object:<br/>
     /// those a property writes, with a public get and set, and those a branch follows, with a public get and an object as value.<br/>
-    /// A property hidden with <c>new</c> resolves to the most derived one, an override of only one accessor to the property it overrides,<br/>
-    /// and an interface also searches the interfaces it extends.
+    /// A name resolves as it does in C# on the type declared: a property hidden with <c>new</c> gives way to the most derived one,<br/>
+    /// an override of only one accessor to the property it overrides, and two interfaces declaring the name, neither hiding the other, reach neither.<br/>
+    /// What a name alone does not reach, a cast does in C#; here it is named with the type declaring it, as <c>IA/Value</c>.
     /// </summary>
     internal static class MemberAccess {
         private const BindingFlags PROPERTY_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
@@ -17,18 +19,21 @@ namespace RiseOn.Transitions {
         /// <summary>The separator of the members of a path, such as <c>Root.Group</c>.</summary>
         public const char PATH_SEPARATOR = '.';
 
+        /// <summary>The separator between the type declaring a property and its name, such as <c>IA/Value</c>.</summary>
+        public const char DECLARING_SEPARATOR = '/';
+
         /// <summary>
-        /// The property of <paramref name="type"/> named <paramref name="name"/>, or null when there is none with a public get and set.
+        /// The property of <paramref name="type"/> named <paramref name="id"/>, or null when not exactly one has a public get and set.
         /// </summary>
-        public static PropertyInfo Find(Type type, string name) {
-            return Find(List(type), name);
+        public static PropertyInfo Find(Type type, string id) {
+            return Find(type, id, IsWritable);
         }
 
         /// <summary>
-        /// The property of <paramref name="type"/> named <paramref name="name"/> a branch can follow, or null when there is none.
+        /// The property of <paramref name="type"/> named <paramref name="id"/> a branch can follow, or null when not exactly one can.
         /// </summary>
-        public static PropertyInfo FindReadable(Type type, string name) {
-            return Find(ListReadable(type), name);
+        public static PropertyInfo FindReadable(Type type, string id) {
+            return Find(type, id, IsReadable);
         }
 
         /// <summary>
@@ -50,11 +55,56 @@ namespace RiseOn.Transitions {
         }
 
         /// <summary>
-        /// The access to <paramref name="property"/> on <paramref name="target"/>: delegates bound to a Unity object,<br/>
-        /// reflection holding nothing of any other object, so it can still be collected.
+        /// How a node names <paramref name="property"/> on <paramref name="type"/>: its name when that alone reaches it, as in C#, or else with the type declaring it.
         /// </summary>
-        public static IMemberAccess<V> Bind<V>(object target, PropertyInfo property) {
-            return target is UnityEngine.Object ? new PropertyAccess<V>(target, property) : new ReflectedAccess<V>(property);
+        public static string GetId(Type type, PropertyInfo property) {
+            var reached = Find(type, property.Name, IsPlain);
+            if (reached != null && IsSameMember(reached, property)) return property.Name;
+
+            return $"{GetDeclaringName(property.DeclaringType)}{DECLARING_SEPARATOR}{property.Name}";
+
+            static bool IsSameMember(PropertyInfo a, PropertyInfo b) {
+                return IsSameMethod(a.GetGetMethod(), b.GetGetMethod()) || IsSameMethod(a.GetSetMethod(), b.GetSetMethod());
+            }
+
+            static bool IsSameMethod(MethodInfo a, MethodInfo b) {
+                return a != null && b != null && a.GetBaseDefinition() == b.GetBaseDefinition();
+            }
+        }
+
+        /// <summary>
+        /// How a branch names the properties <paramref name="hops"/> it follows from <paramref name="type"/>, such as <c>Root.Group</c>.
+        /// </summary>
+        public static string GetPathId(Type type, IEnumerable<PropertyInfo> hops) {
+            var ids = new List<string>();
+            foreach (var hop in hops) {
+                ids.Add(GetId(type, hop));
+                type = hop.PropertyType;
+            }
+
+            return string.Join(PATH_SEPARATOR.ToString(), ids);
+        }
+
+        /// <summary>
+        /// The method that runs when <paramref name="property"/> is written on an object of <paramref name="type"/>, one for an override and what it overrides,<br/>
+        /// and for an interface's property and what implements it: two properties write the same member when they run the same method.
+        /// </summary>
+        public static MethodInfo FindWriter(Type type, PropertyInfo property) {
+            var setter = property.GetSetMethod();
+            if (property.DeclaringType.IsInterface) {
+                var map = type.GetInterfaceMap(property.DeclaringType);
+                setter = map.TargetMethods[Array.IndexOf(map.InterfaceMethods, setter)];
+            }
+
+            return setter.GetBaseDefinition();
+        }
+
+        /// <summary>
+        /// The access to <paramref name="property"/> on <paramref name="target"/>: delegates bound to a Unity object,<br/>
+        /// delegates taking the object on each call for any other, holding nothing of it, so it can still be collected.
+        /// </summary>
+        public static IMemberAccess<V> Bind<T, V>(T target, PropertyInfo property) where T : class {
+            return target is UnityEngine.Object ? new PropertyAccess<V>(target, property) : new OpenAccess<T, V>(property);
         }
 
         /// <summary>
@@ -69,14 +119,14 @@ namespace RiseOn.Transitions {
         }
 
         /// <summary>
-        /// Every property of <paramref name="type"/> with a public get and set, one per name.
+        /// Every property of <paramref name="type"/> with a public get and set, one per name, or per interface declaring it.
         /// </summary>
         public static IEnumerable<PropertyInfo> List(Type type) {
             return List(type, IsWritable);
         }
 
         /// <summary>
-        /// Every property of <paramref name="type"/> a branch can follow, one per name:<br/>
+        /// Every property of <paramref name="type"/> a branch can follow, one per name, or per interface declaring it:<br/>
         /// a public get and an object as value, not a string, an array or a delegate, which hold nothing to write.
         /// </summary>
         public static IEnumerable<PropertyInfo> ListReadable(Type type) {
@@ -84,7 +134,8 @@ namespace RiseOn.Transitions {
         }
 
         /// <summary>
-        /// The name of the one property <paramref name="member"/> reads on its parameter, such as <c>group => group.alpha</c>.
+        /// How a node names the one property <paramref name="member"/> reads on its parameter, such as <c>group => group.alpha</c>,<br/>
+        /// or <c>IA/Value</c> for <c>target => ((IA)target).Value</c> when <c>Value</c> alone does not reach that one.
         /// </summary>
         public static string GetName(LambdaExpression member) {
             var path = GetPath(member);
@@ -94,14 +145,14 @@ namespace RiseOn.Transitions {
         }
 
         /// <summary>
-        /// The path of the properties <paramref name="path"/> reads from its parameter, such as <c>Root.Group</c> for <c>page => page.Root.Group</c>.
+        /// How a branch names the properties <paramref name="path"/> reads from its parameter, such as <c>Root.Group</c> for <c>page => page.Root.Group</c>.
         /// </summary>
         public static string GetPath(LambdaExpression path) {
             var names = new List<string>();
             var body = Unwrap(path.Body);
             while (body is MemberExpression { Member: PropertyInfo property } access) {
-                names.Add(property.Name);
                 body = Unwrap(access.Expression);
+                names.Add(body == null ? property.Name : GetId(body.Type, property));
             }
 
             if (names.Count is 0 || body is not ParameterExpression) {
@@ -116,19 +167,57 @@ namespace RiseOn.Transitions {
             }
         }
 
-        private static PropertyInfo Find(IEnumerable<PropertyInfo> properties, string name) {
-            if (string.IsNullOrEmpty(name)) return null;
+        private static PropertyInfo Find(Type type, string id, Func<PropertyInfo, bool> isUsable) {
+            if (string.IsNullOrEmpty(id)) return null;
 
-            foreach (var property in properties) {
-                if (property.Name == name) return property;
+            var separator = id.IndexOf(DECLARING_SEPARATOR);
+            var name = id.Substring(separator + 1);
+            if (separator >= 0) {
+                var declaring = id.Substring(0, separator);
+                return ListCastTypes(type)
+                    .Where(candidate => GetDeclaringName(candidate) == declaring)
+                    .SelectMany(candidate => candidate.GetProperties(PROPERTY_FLAGS))
+                    .FirstOrDefault(property => property.Name == name && isUsable(property));
             }
 
-            return null;
+            if (type.IsInterface && List(type, IsPlain).Count(property => property.Name == name) > 1) return null;
+
+            return List(type, isUsable).FirstOrDefault(property => property.Name == name);
+
+            // What a cast reaches from type: itself, its base classes, and its interfaces.
+            static IEnumerable<Type> ListCastTypes(Type type) {
+                for (var current = type; current != null; current = current.BaseType) yield return current;
+                foreach (var contract in type.GetInterfaces()) yield return contract;
+            }
+        }
+
+        // The short name, its type arguments included: IBadge<Int32>. It holds neither separator, so it fits in a path.
+        private static string GetDeclaringName(Type type) {
+            if (!type.IsGenericType) return type.Name;
+
+            var name = type.Name.Substring(0, type.Name.IndexOf('`'));
+            return $"{name}<{string.Join(",", type.GetGenericArguments().Select(GetDeclaringName))}>";
         }
 
         private static IEnumerable<PropertyInfo> List(Type type, Func<PropertyInfo, bool> isUsable) {
+            return type.IsInterface ? ListOfInterface(type, isUsable) : ListOfClass(type, isUsable);
+
+            // A property is hidden only by an interface extending the one declaring it; two parents apart both stay.
+            static IEnumerable<PropertyInfo> ListOfInterface(Type type, Func<PropertyInfo, bool> isUsable) {
+                var declarings = type.GetInterfaces().Prepend(type).ToList();
+                return declarings
+                    .SelectMany(declaring => declaring.GetProperties(PROPERTY_FLAGS))
+                    .Where(property => isUsable(property) && !declarings.Any(other => IsHiddenBy(property, other)));
+            }
+
+            static bool IsHiddenBy(PropertyInfo property, Type other) {
+                return other != property.DeclaringType && property.DeclaringType.IsAssignableFrom(other) && other.GetProperties(PROPERTY_FLAGS).Any(hiding => hiding.Name == property.Name);
+            }
+        }
+
+        private static IEnumerable<PropertyInfo> ListOfClass(Type type, Func<PropertyInfo, bool> isUsable) {
             var names = new HashSet<string>();
-            foreach (var declaring in ListDeclaringTypes(type)) {
+            for (var declaring = type; declaring != null; declaring = declaring.BaseType) {
                 foreach (var property in declaring.GetProperties(PROPERTY_FLAGS)) {
                     if (names.Contains(property.Name)) continue;
 
@@ -139,16 +228,6 @@ namespace RiseOn.Transitions {
                         names.Add(property.Name);
                     }
                 }
-            }
-
-            static IEnumerable<Type> ListDeclaringTypes(Type type) {
-                if (type.IsInterface) {
-                    yield return type;
-                    foreach (var parent in type.GetInterfaces()) yield return parent;
-                    yield break;
-                }
-
-                for (var current = type; current != null; current = current.BaseType) yield return current;
             }
 
             static bool IsOverride(PropertyInfo property) {

@@ -78,7 +78,7 @@ namespace RiseOn.Transitions.Editor {
         }
 
         private static Regex Name(string field) {
-            return new Regex($@"\G\s*data:\s*\n\s*{field}: *([A-Za-z_][A-Za-z0-9_.]*)?", RegexOptions.Compiled);
+            return new Regex($@"\G\s*data:\s*\n\s*{field}: *['""]?([^\s'""]+)?", RegexOptions.Compiled);
         }
 
         // The target type and the member, or the path of members, of every value of the type marked stored in a text-serialized asset.

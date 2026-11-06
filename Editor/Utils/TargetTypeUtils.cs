@@ -127,7 +127,7 @@ namespace RiseOn.Transitions.Editor {
         /// A new <see cref="TransitionProperty{T, V}"/> writing <paramref name="member"/> of <paramref name="target"/>, with no modifier yet.
         /// </summary>
         public static object CreateProperty(Type target, PropertyInfo member) {
-            return Activator.CreateInstance(typeof(TransitionProperty<,>).MakeGenericType(target, member.PropertyType), member.Name, null);
+            return Activator.CreateInstance(typeof(TransitionProperty<,>).MakeGenericType(target, member.PropertyType), MemberAccess.GetId(target, member), null);
         }
 
         /// <summary>

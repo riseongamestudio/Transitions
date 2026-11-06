@@ -15,7 +15,9 @@ namespace RiseOn.Transitions.Editor {
     /// What the Inspector does the same on every list of nodes: that of a target, a branch, or an unbound target.<br/>
     /// Adding one picks it in one window listing, in a folder per type declaring them, both kinds of node:<br/>
     /// a property writing a member worth writing, those already written grayed out; and a branch following a member to an object,<br/>
-    /// then step by step on from the type it reaches until Branch Here. Every row shows the icon of the member's type, named in brackets after it.
+    /// then step by step on from the type it reaches until Branch Here, its row showing the arrow of a folder.<br/>
+    /// Every row shows the icon of the member's type, named in brackets after it.<br/>
+    /// Two interfaces declaring one name are two rows, each in the folder of its own.
     /// </summary>
     internal static class NodeUtils {
         /// <summary>
@@ -35,7 +37,7 @@ namespace RiseOn.Transitions.Editor {
             // Each step lists Branch Here first, ending the path at the type reached, then the members going on from it.
             void Follow(List<PropertyInfo> hops) {
                 var reached = hops[^1].PropertyType;
-                var path = string.Join(MemberAccess.PATH_SEPARATOR.ToString(), hops.Select(hop => hop.Name));
+                var path = MemberAccess.GetPathId(type, hops);
                 var steps = ListChoices(reached, null)
                     .Prepend(new SearchChoice<Pick>($"Branch Here   ({reached.GetNiceName()})", new Pick(null, true), icon: () => TargetTypeUtils.GetIcon(reached), labelSearch: "Branch Here"));
 
@@ -65,9 +67,9 @@ namespace RiseOn.Transitions.Editor {
             return picks.Select(pick => {
                 var member = pick.Member;
                 var folder = isFoldered ? $"{member.DeclaringType.GetNiceName()}/" : string.Empty;
-                var disabled = !pick.IsBranch && written.Contains(member.Name) ? "already written" : null;
+                var disabled = !pick.IsBranch && written.Contains(MemberAccess.GetId(type, member)) ? "already written" : null;
                 return new SearchChoice<Pick>($"{folder}{member.Name}   ({member.PropertyType.GetNiceName()})", pick, disabled,
-                    () => TargetTypeUtils.GetIcon(member.PropertyType), folderIcon: () => TargetTypeUtils.GetIcon(member.DeclaringType));
+                    () => TargetTypeUtils.GetIcon(member.PropertyType), folderIcon: () => TargetTypeUtils.GetIcon(member.DeclaringType), hasNextStep: pick.IsBranch);
             });
         }
 

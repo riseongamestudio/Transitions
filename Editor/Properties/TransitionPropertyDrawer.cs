@@ -11,8 +11,8 @@ namespace RiseOn.Transitions.Editor {
     /// A rest value typed in has a Capture button beside it, filling in the member's value on the object the property writes now:<br/>
     /// its target's object, an unbound target's preview object, or what a branch reaches; in play mode, the rest value a transition keeps for it, once one wrote it.<br/>
     /// With no such object, the button is left out.<br/>
-    /// When the member cannot be written, the title is red and an error says why: none picked, none of that name on <typeparamref name="T"/><br/>
-    /// (renamed or removed since), or one of another type.
+    /// When the member cannot be written, the title is red and an error says why: none picked, not exactly one of that name on <typeparamref name="T"/><br/>
+    /// (renamed or removed since, or declared by two interfaces), or one of another type.
     /// </summary>
     [DrawerPriority(0, 0, 2001)]
     public sealed class TransitionPropertyDrawer<T, V> : OdinValueDrawer<TransitionProperty<T, V>> where T : class {
@@ -72,14 +72,14 @@ namespace RiseOn.Transitions.Editor {
             var member = MemberAccess.Find(typeof(T), ValueEntry.SmartValue.member);
             if (member == null || member.PropertyType != typeof(V)) return;
 
-            rest.ValueEntry.WeakSmartValue = Application.isPlaying && TransitionRestHub.TryGetRest<V>(source, member.Name, out var kept) ? kept : (V)member.GetValue(source);
+            rest.ValueEntry.WeakSmartValue = Application.isPlaying && TransitionRestHub.TryGetRest<V>(source, member, out var kept) ? kept : (V)member.GetValue(source);
         }
 
         private static string FindError(string member) {
             if (string.IsNullOrEmpty(member)) return "No member is picked.";
 
             var found = MemberAccess.Find(typeof(T), member);
-            if (found == null) return $"{typeof(T).GetNiceName()} has no public property \"{member}\" with a public get and set; it is skipped.";
+            if (found == null) return $"{typeof(T).GetNiceName()} has no single public property \"{member}\" with a public get and set; it is skipped. Two interfaces declaring the name need one picked.";
             if (found.PropertyType != typeof(V)) return $"{typeof(T).GetNiceName()}.{member} is {found.PropertyType.GetNiceName()}, not {typeof(V).GetNiceName()}; it is skipped.";
 
             return null;

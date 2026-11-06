@@ -4,6 +4,20 @@ Mọi thay đổi đáng kể của `com.riseon.transitions` được ghi ở đ
 [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), đánh số theo
 [Semantic Versioning](https://semver.org/lang/vi/).
 
+## [Chưa phát hành]
+
+### Sửa
+
+- Hai transition ghi hai member cùng tên trên một object không còn dùng chung giá trị lúc
+  nghỉ và đường ghi: `A.Value` và `new Value` của lớp con `B` giờ ghi đúng member của mình.
+  Override và property của interface vẫn tính là một member với thứ nó trỏ tới.
+- Tên member được hiểu như trong C#: `Value` trên kiểu có hai interface cha cùng khai báo là lỗi,
+  phải chọn rõ. **Add Property** liệt kê đủ cả hai, node lưu `IA/Value`, cả ở từng bước của nhánh;
+  code ép kiểu `x => ((IA)x).Value`, kể cả với property bị `new` che.
+- **Add Property**: dòng nhánh có mũi tên như thư mục, phân biệt với dòng property cùng tên.
+- Ghi property trên lớp C# thường không còn cấp phát: dùng delegate nhận object ở mỗi lần gọi
+  thay cho reflection, vẫn giữ object bằng tham chiếu yếu.
+
 ## [0.1.0] - 2026-11-03
 
 ### Thêm

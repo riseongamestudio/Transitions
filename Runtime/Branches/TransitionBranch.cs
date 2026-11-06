@@ -57,7 +57,7 @@ namespace RiseOn.Transitions {
             var found = MemberAccess.FindPath(target, path);
             if (found == null || found[^1].PropertyType != typeof(U)) return null;
 
-            var copy = (IUntypedNodes)Activator.CreateInstance(typeof(TransitionBranch<,>).MakeGenericType(target, typeof(U)), path);
+            var copy = (IUntypedNodes)Activator.CreateInstance(typeof(TransitionBranch<,>).MakeGenericType(target, typeof(U)), MemberAccess.GetPathId(target, found));
             foreach (var node in nodes) copy.TryAdd(node);
             return copy;
         }
@@ -135,7 +135,7 @@ namespace RiseOn.Transitions {
             foundPath = path;
             hops = MemberAccess.FindPath(typeof(T), path);
             if (hops == null) {
-                TransitionLog.Once(ref isReported, $"{typeof(T).Name} has no path \"{path}\" of public properties with a public get; the branch is skipped.");
+                TransitionLog.Once(ref isReported, $"{typeof(T).Name} has no single path \"{path}\" of public properties with a public get; the branch is skipped.");
             } else if (hops[^1].PropertyType != typeof(U)) {
                 TransitionLog.Once(ref isReported, $"{typeof(T).Name}.{path} is {hops[^1].PropertyType.Name}, not {typeof(U).Name}; the branch is skipped.");
                 hops = null;

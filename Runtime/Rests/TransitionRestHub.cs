@@ -25,13 +25,22 @@ namespace RiseOn.Transitions {
         /// <summary>
         /// The access to <paramref name="member"/> on <paramref name="owner"/> and its rest value, read now when nothing wrote it yet.
         /// </summary>
-        public static PropertySlot<V> GetProperty<V>(object owner, PropertyInfo member) {
+        public static PropertySlot<V> GetProperty<T, V>(T owner, PropertyInfo member) where T : class {
             var slots = GetRow(owner).Slots;
             for (var i = 0; i < slots.Count; i++) {
-                if (slots[i] is PropertySlot<V> slot && slot.Member == member.Name) return slot;
+                if (slots[i] is PropertySlot<V> slot && slot.IsFor(member)) return slot;
             }
 
-            var created = new PropertySlot<V>(owner, member);
+            // First asked of this object: another property may already write the same member, such as what an interface's property runs.
+            var writer = MemberAccess.FindWriter(owner.GetType(), member);
+            for (var i = 0; i < slots.Count; i++) {
+                if (slots[i] is not PropertySlot<V> slot || slot.Writer != writer) continue;
+
+                slot.Add(member);
+                return slot;
+            }
+
+            var created = new PropertySlot<V>(owner, member, writer, MemberAccess.Bind<T, V>(owner, member));
             slots.Add(created);
             return created;
         }
@@ -42,7 +51,7 @@ namespace RiseOn.Transitions {
         public static object Follow(object owner, PropertyInfo member) {
             var slots = GetRow(owner).Slots;
             for (var i = 0; i < slots.Count; i++) {
-                if (slots[i] is HopSlot slot && slot.Member == member.Name) return slot.Get(owner);
+                if (slots[i] is HopSlot slot && slot.Member == member) return slot.Get(owner);
             }
 
             var created = new HopSlot(owner, member);
@@ -53,10 +62,11 @@ namespace RiseOn.Transitions {
         /// <summary>
         /// The rest value of <paramref name="member"/> on <paramref name="owner"/>, when a transition has written it.
         /// </summary>
-        public static bool TryGetRest<V>(object owner, string member, out V rest) {
+        public static bool TryGetRest<V>(object owner, PropertyInfo member, out V rest) {
             if (owner != null && indices.TryGetValue(Key.Of(owner), out var index)) {
+                var writer = MemberAccess.FindWriter(owner.GetType(), member);
                 foreach (var slot in rows[index].Slots) {
-                    if (slot is not PropertySlot<V> property || property.Member != member) continue;
+                    if (slot is not PropertySlot<V> property || property.Writer != writer) continue;
 
                     rest = property.Rest;
                     return true;
@@ -166,28 +176,44 @@ namespace RiseOn.Transitions {
             private object Target => weak == null ? held : weak.TryGetTarget(out var target) ? target : null;
         }
 
-        public abstract class Slot {
-            public readonly string Member;
+        public abstract class Slot { }
 
-            protected Slot(string member) {
-                Member = member;
-            }
-        }
-
+        // One written member of an object, whichever property writes it: the method it runs tells them apart, not their name,
+        // as a property hidden with new and two interfaces sharing a name write different members.
         public sealed class PropertySlot<V> : Slot {
+            public readonly MethodInfo Writer;
             public readonly IMemberAccess<V> Access;
             public readonly V Rest;
 
-            public PropertySlot(object owner, PropertyInfo member) : base(member.Name) {
-                Access = MemberAccess.Bind<V>(owner, member);
-                Rest = Access.Get(owner);
+            private readonly List<PropertyInfo> members;
+
+            public PropertySlot(object owner, PropertyInfo member, MethodInfo writer, IMemberAccess<V> access) {
+                members = new List<PropertyInfo>(1) { member };
+                Writer = writer;
+                Access = access;
+                Rest = access.Get(owner);
+            }
+
+            public bool IsFor(PropertyInfo member) {
+                for (var i = 0; i < members.Count; i++) {
+                    if (members[i] == member) return true;
+                }
+
+                return false;
+            }
+
+            public void Add(PropertyInfo member) {
+                members.Add(member);
             }
         }
 
         private sealed class HopSlot : Slot {
+            public readonly PropertyInfo Member;
+
             private readonly Func<object, object> getter;
 
-            public HopSlot(object owner, PropertyInfo member) : base(member.Name) {
+            public HopSlot(object owner, PropertyInfo member) {
+                Member = member;
                 getter = MemberAccess.BindReadable(owner, member);
             }
 

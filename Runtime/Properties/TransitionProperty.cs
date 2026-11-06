@@ -69,7 +69,7 @@ namespace RiseOn.Transitions {
             var modifierType = typeof(ITransitionModifier<,>).MakeGenericType(target, typeof(V));
             if (modifier != null && !modifierType.IsInstanceOfType(modifier)) return null;
 
-            var copy = Activator.CreateInstance(typeof(TransitionProperty<,>).MakeGenericType(target, typeof(V)), member, modifier);
+            var copy = Activator.CreateInstance(typeof(TransitionProperty<,>).MakeGenericType(target, typeof(V)), MemberAccess.GetId(target, property), modifier);
             var rested = (IRestHolder<V>)copy;
             rested.CustomRest = customRest;
             rested.Rest = rest;
@@ -86,7 +86,7 @@ namespace RiseOn.Transitions {
             var property = Find();
             if (property == null) return;
 
-            var slot = TransitionRestHub.GetProperty<V>(target, property);
+            var slot = TransitionRestHub.GetProperty<T, V>(target, property);
             var start = customRest ? rest : slot.Rest;
             slot.Access.Set(target, modifier == null ? start : modifier.Apply(start, t, target));
         }
@@ -99,7 +99,7 @@ namespace RiseOn.Transitions {
             foundMember = member;
             found = MemberAccess.Find(typeof(T), member);
             if (found == null) {
-                TransitionLog.Once(ref isReported, $"{typeof(T).Name} has no public property \"{member}\" with a public get and set; it is skipped.");
+                TransitionLog.Once(ref isReported, $"{typeof(T).Name} has no single public property \"{member}\" with a public get and set; it is skipped.");
             } else if (found.PropertyType != typeof(V)) {
                 TransitionLog.Once(ref isReported, $"{typeof(T).Name}.{member} is {found.PropertyType.Name}, not {typeof(V).Name}; it is skipped.");
                 found = null;

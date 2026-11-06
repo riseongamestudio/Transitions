@@ -38,7 +38,15 @@ Pack giữ các giá trị này trong một kho nội bộ, nhóm theo object. M
 UniTask trên luồng chính kiểm một object theo lượt và bỏ object đã bị hủy. Object không
 phải Unity object (lớp C# thường) được kho giữ bằng tham chiếu yếu, nên kho không làm nó sống
 lâu hơn: GC thu nó rồi thì giá trị của nó bị bỏ. Đọc, ghi member của object như vậy đi qua
-reflection, mỗi lần ghi một giá trị struct thì box một lần.
+delegate nhận object ở mỗi lần gọi, không cấp phát.
+
+Mỗi giá trị đi theo đúng member được ghi. `new Value` ở lớp con và `Value` ở lớp cha là hai
+member, nên có hai giá trị; property của interface và lớp cài nó là một member.
+
+Tên member được hiểu như trong C#, theo kiểu khai báo của target. Target kiểu lớp con thì `Value`
+là `new Value`, muốn `Value` của lớp cha thì để target kiểu lớp cha, hoặc ép kiểu trong code:
+`x => ((A)x).Value`. Interface kế thừa hai interface cùng có `Value` thì tên trần không chỉ tới
+cái nào, phải chọn rõ: Inspector có hai mục, node lưu `IA/Value`, code ép kiểu `x => ((IA)x).Value`.
 
 Object phải đang ở trạng thái hiện xong lúc chuyển cảnh đầu tiên chạm vào nó: vừa sinh ra
 từ prefab chẳng hạn. Hai chuyển cảnh cùng ghi một member cùng lúc thì cái ghi sau thắng.

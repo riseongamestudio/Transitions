@@ -60,7 +60,7 @@ namespace RiseOn.Transitions.Editor {
             if (string.IsNullOrEmpty(path)) return "No path is picked.";
 
             var hops = MemberAccess.FindPath(typeof(T), path);
-            if (hops == null) return $"{typeof(T).GetNiceName()} has no path \"{path}\" of public properties with a public get; the branch is skipped.";
+            if (hops == null) return $"{typeof(T).GetNiceName()} has no single path \"{path}\" of public properties with a public get; the branch is skipped. Two interfaces declaring a name need one picked.";
             if (hops[^1].PropertyType != typeof(U)) return $"{typeof(T).GetNiceName()}.{path} is {hops[^1].PropertyType.GetNiceName()}, not {typeof(U).GetNiceName()}; the branch is skipped.";
 
             return null;
