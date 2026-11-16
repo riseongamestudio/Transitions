@@ -30,21 +30,26 @@ Package `com.riseon.transitions`, namespace `RiseOn.Transitions`.
 | uGUI (`com.unity.ugui`) 2.0.0 | Tự cài theo `package.json` | Đo `RectTransform` |
 | [Odin Inspector](https://odininspector.com) | Cài tay từ Asset Store | Toàn bộ Inspector của pack |
 
-"Tự cài" là khi cài qua OpenUPM; cài bằng git URL thì phải cài các package kia
+"Tự cài" là khi cài qua registry; cài bằng git URL thì phải cài các package kia
 trước. Thiếu Odin thì project báo một lỗi từ `RiseOn.Transitions.Requirements`.
 
 ## Cài đặt
 
-**OpenUPM** (khuyên dùng): thêm registry OpenUPM với scope `com.riseon`,
+**Registry RiseOn** (khuyên dùng): thêm registry RiseOn với scope `com.riseon`, và registry OpenUPM với scope
 `com.annulusgames` và `com.cysharp` vào `Packages/manifest.json`, rồi thêm package:
 
 ```json
 {
   "scopedRegistries": [
     {
-      "name": "package.openupm.com",
+      "name": "RiseOn",
+      "url": "https://upm.riseongamestudio.com",
+      "scopes": ["com.riseon"]
+    },
+    {
+      "name": "OpenUPM",
       "url": "https://package.openupm.com",
-      "scopes": ["com.riseon", "com.annulusgames", "com.cysharp"]
+      "scopes": ["com.annulusgames", "com.cysharp"]
     }
   ],
   "dependencies": {
