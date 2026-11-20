@@ -1,6 +1,7 @@
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
+using RiseOn.Utils.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -30,7 +31,7 @@ namespace RiseOn.Transitions.Editor {
 
             // Not indented: the item already sets its fields apart, starting them under the middle of its handle.
             if (SirenixEditorGUI.BeginFadeGroup(this, Property.State.Expanded)) {
-                if (error != null) SirenixEditorGUI.ErrorMessageBox(error);
+                if (error != null) HelpBoxUtils.Draw(error, MessageType.Error);
 
                 foreach (var child in Property.Children) {
                     if (child.Name == nameof(TransitionProperty<T, V>.rest)) DrawRest(child);
@@ -44,7 +45,7 @@ namespace RiseOn.Transitions.Editor {
         private void DrawHeader(GUIContent title, bool isBroken) {
             typeStyle ??= new GUIStyle(EditorStyles.label) { alignment = TextAnchor.MiddleRight, normal = { textColor = SirenixGUIStyles.LeftAlignedGreyLabel.normal.textColor } };
 
-            var row = ItemList.MarkFirstRow(EditorGUILayout.GetControlRect());
+            var row = SectionRows.MarkFirstRow(EditorGUILayout.GetControlRect());
             var type = row.TakeFromRight(typeStyle.CalcSize(TYPE_TEXT).x);
             GUI.Label(type, TYPE_TEXT, typeStyle);
 

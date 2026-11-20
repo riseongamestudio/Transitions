@@ -4,7 +4,16 @@ Mọi thay đổi đáng kể của `com.riseon.transitions` được ghi ở đ
 [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), đánh số theo
 [Semantic Versioning](https://semver.org/lang/vi/).
 
-## [Chưa phát hành]
+## [0.2.0] - 2026-11-20
+
+### Đổi
+
+- Inspector theo chuẩn giao diện chung của các pack RiseOn (Utils 1.0.15). Khung `Transition` và
+  target không object là một mục bo góc gập mở được như trang settings: tên field trên thanh, thanh
+  preview ở cột giá trị, nút + cuối thanh. Dòng target và node nằm sát viền, sọc xen kẽ; dòng trong
+  cùng dưới chuột sáng lên. Tay nắm, nút + và nút X vẽ icon của Utils, đúng tâm ở mọi tỉ lệ màn
+  hình; tay nắm và X là hai ô vuông đối xứng ở hai đầu dòng. Hộp báo lỗi vẽ bằng `HelpBoxUtils`.
+- Cần `com.riseon.utils` 1.0.15.
 
 ### Sửa
 

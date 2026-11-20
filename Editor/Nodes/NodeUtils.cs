@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using RiseOn.Utils.Editor;
 using RiseOn.Utils.Editor.SearchWindow;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
+using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -90,7 +92,7 @@ namespace RiseOn.Transitions.Editor {
                 .Where(group => group.Count() > 1)
                 .Select(group => MemberAccess.GetDisplayName(group.Key))
                 .ToList();
-            if (duplicates.Count > 0) SirenixEditorGUI.WarningMessageBox($"{string.Join(", ", duplicates)}: written by more than one property, so the last one wins.");
+            if (duplicates.Count > 0) HelpBoxUtils.Draw($"{string.Join(", ", duplicates)}: written by more than one property, so the last one wins.", MessageType.Warning);
         }
 
         /// <summary>

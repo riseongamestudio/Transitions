@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using RiseOn.Utils.Editor;
 using RiseOn.Utils.Editor.SearchWindow;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
@@ -14,8 +15,9 @@ using Object = UnityEngine.Object;
 
 namespace RiseOn.Transitions.Editor {
     /// <summary>
-    /// Draws a <see cref="Transition"/> as Odin draws a list: a title bar with the field's name, a preview slider over the value column and the + button,<br/>
-    /// then its targets as an <see cref="ItemList"/>. Its context menu, Odin's, saves or applies a preset.<br/>
+    /// Draws a <see cref="Transition"/> as a <see cref="Section"/> that folds: the field's name on the bar over the label column,<br/>
+    /// a preview slider over the value column and the + button at its end, then its targets as <see cref="SectionRows"/> whose rows meet the border.<br/>
+    /// Its context menu, Odin's, saves or applies a preset.<br/>
     /// The slider shows only while a target has an object, and acts only while held: pressing it saves every member the transition writes,<br/>
     /// dragging applies <c>t</c>, and letting go sets every saved member back, as <see cref="TransitionPreview"/> does. Nothing is recorded for Undo.<br/>
     /// A target is added by dropping an object on the box, which asks which type to target it as: its own, a base class or an interface,<br/>
@@ -23,17 +25,11 @@ namespace RiseOn.Transitions.Editor {
     /// then the type to target it as; closing it with nothing picked adds a None target, as Odin's + does.
     /// </summary>
     public sealed class TransitionDrawer : OdinValueDrawer<Transition>, IDefinesGenericMenuItems {
-        private const float PREVIEW_GAP = 6f;
-        private const float ADD_WIDTH = 18f;
-
-        // The room the layout keeps on each side of the +, about as much as above and below it in Odin's toolbar.
-        private const float ADD_INSET = 2f;
-
         private static readonly GUIContent PREVIEW_TOOLTIP = new(string.Empty, "Hold and drag to preview t from 0 (hidden) to 1 (shown). Letting go puts every object back as it was.");
         private static readonly Color DROP_FACE = new(.3f, .6f, 1f, .1f);
         private static readonly Color DROP_OUTLINE = new(.3f, .6f, 1f, 1f);
 
-        private readonly ItemList list = new();
+        private readonly SectionRows list = new();
 
         private bool isPreviewing;
         private float preview = 1f;
@@ -42,19 +38,30 @@ namespace RiseOn.Transitions.Editor {
         private Rect headerRect;
         private Action<Rect> pendingWindow;
 
+        protected override void Initialize() {
+            Section.Restore(Property, Property.State.Expanded);
+        }
+
         protected override void DrawPropertyLayout(GUIContent label) {
             var eventType = Event.current.type;
             var items = Property.Children[nameof(Transition.targets)].Children[0];
 
-            // Built as Odin builds its lists: a toolbar for the title, then the framed items right under it, reaching the frame.
-            var box = SirenixEditorGUI.BeginIndentedVertical(SirenixGUIStyles.PropertyMargin);
-            DrawHeader(label, CanPreview());
-            if (SirenixEditorGUI.BeginFadeGroup(this, Property.State.Expanded)) list.Draw(items, "Drop objects here, or press + to add a target.", Move, Remove, true);
-            SirenixEditorGUI.EndFadeGroup();
-            SirenixEditorGUI.EndIndentedVertical();
+            // The bar's slider and + first, then the targets in the section's fade.
+            using (var section = Section.Foldout(Property, label?.text ?? string.Empty, label?.tooltip, buttons: 1, padded: false, barValue: true)) {
+                DrawPreview(section.BarValue, CanPreview());
+                if (section.Button(0, SdfIconType.Plus, "Add a target")) ShowAdd(section.ButtonRect(0));
+                if (section.Open) DrawTargets(items);
+            }
+
+            var box = GUILayoutUtility.GetLastRect();
+            if (eventType is EventType.Repaint) headerRect = new Rect(box.x, box.y, box.width, Section.Height);
 
             OpenPendingWindow();
             HandleDrop(eventType, box);
+        }
+
+        private void DrawTargets(InspectorProperty items) {
+            list.Draw(items.Children.Count, i => items.Children[i].Draw(GUIContent.none), "Drop objects here, or press + to add a target.", Move, Remove, marksFirstRow: true);
         }
 
         // Only a target with an object has anything to show.
@@ -64,40 +71,6 @@ namespace RiseOn.Transitions.Editor {
             }
 
             return false;
-        }
-
-        // The name over the label column, then the slider over the value column up to the + button.
-        private void DrawHeader(GUIContent label, bool canPreview) {
-            SirenixEditorGUI.BeginHorizontalToolbar();
-            // A control rect, margins included, as Odin takes the one of its list titles.
-            var title = EditorGUILayout.GetControlRect(false, GUILayout.Width(EditorGUIUtility.labelWidth));
-            Property.State.Expanded = SirenixEditorGUI.Foldout(title, Property.State.Expanded, label ?? GUIContent.none);
-
-            // Split as a field row: the title over the label column, the slider and the + over the value column, the slider from its left edge.
-            // The layout only reserves their room: they are placed from the header, which is only known outside layout, where they are drawn and clicked.
-            var bar = Event.current.type is EventType.Layout ? default : GUIHelper.GetCurrentLayoutRect();
-            var slider = GUILayoutUtility.GetRect(0f, EditorGUIUtility.singleLineHeight, GUILayout.ExpandWidth(true));
-            GUILayout.Space(PREVIEW_GAP);
-
-            // The same + as a target's row: Odin's inline button, a line high, as far from the toolbar's right border as from its top and bottom ones.
-            // Odin draws the top border above the toolbar's rect, and the bottom and right ones on its last row and column, so those are left out.
-            GUILayoutUtility.GetRect(ADD_WIDTH + 2f * ADD_INSET, EditorGUIUtility.singleLineHeight, GUILayout.ExpandWidth(false));
-            var add = new Rect(0f, 0f, ADD_WIDTH, EditorGUIUtility.singleLineHeight);
-            if (Event.current.type is not EventType.Layout) {
-                var inside = new Rect(bar.x, bar.y, bar.width - 1f, bar.height - 1f);
-                var inset = (inside.height - add.height) / 2f;
-                add.x = inside.xMax - inset - add.width;
-                add.y = inside.y + inset;
-                slider.xMin = bar.x + EditorGUIUtility.labelWidth + 2f;
-                slider.xMax = add.x - PREVIEW_GAP;
-                slider.y = add.y;
-            }
-
-            DrawPreview(slider, canPreview);
-            if (ButtonUtils.IconButton(add, SdfIconType.Plus)) ShowAdd(add);
-            SirenixEditorGUI.EndHorizontalToolbar();
-
-            if (Event.current.type is EventType.Repaint) headerRect = GUILayoutUtility.GetLastRect();
         }
 
         // The control ID is taken whether the slider shows or not, so a field drawn after the header keeps its own ID while objects come and go.
@@ -196,8 +169,11 @@ namespace RiseOn.Transitions.Editor {
         // As SerObject lists take drops: only when nothing inside took the drag, over the whole box, outlined while it hovers.
         private void HandleDrop(EventType eventType, Rect rect) {
             if (eventType is EventType.Repaint && isDropHighlighted) {
+                // Rounded as the section's box, on the pixel grid as its border is.
                 isDropHighlighted = false;
-                Handles.DrawSolidRectangleWithOutline(rect, DROP_FACE, DROP_OUTLINE);
+                var shape = PixelUtils.Snap(rect);
+                GUI.DrawTexture(shape, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0f, DROP_FACE, 0f, Section.Radius);
+                GUI.DrawTexture(shape, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0f, DROP_OUTLINE, 1f, Section.Radius);
                 return;
             }
 

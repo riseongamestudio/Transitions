@@ -53,7 +53,7 @@ trước. Thiếu Odin thì project báo một lỗi từ `RiseOn.Transitions.Re
     }
   ],
   "dependencies": {
-    "com.riseon.transitions": "0.1.0"
+    "com.riseon.transitions": "0.2.0"
   }
 }
 ```

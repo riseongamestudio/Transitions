@@ -1,3 +1,4 @@
+using RiseOn.Utils.Editor;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
@@ -15,7 +16,7 @@ namespace RiseOn.Transitions.Editor {
         }
 
         protected override void DrawPropertyLayout(GUIContent label) {
-            var row = ItemList.MarkFirstRow(EditorGUILayout.GetControlRect());
+            var row = SectionRows.MarkFirstRow(EditorGUILayout.GetControlRect());
             var field = SirenixEditorGUI.PrefixRect(row, label, out var prefix);
             var id = GUIUtility.GetControlID(FocusType.Keyboard, row);
             var serialized = Property.Tree.UnitySerializedObject?.FindProperty(Property.UnityPropertyPath);

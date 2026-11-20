@@ -5,8 +5,9 @@
 Mọi drawer là của Odin, áp cho mọi field `Transition` và `TransitionUnboundTarget<T>`, ở
 MonoBehaviour, ScriptableObject hay lồng trong class khác.
 
-Một field `Transition` hiện thành một khung. Dòng đầu gồm tên field, thanh preview trải trên
-cột giá trị (chỉ hiện khi có target đã có object), rồi nút +. Dưới đó là các target, mỗi target
+Một field `Transition` hiện thành một mục gập mở được như mục của trang settings RiseOn (khung bo
+góc, thanh tiêu đề, của Utils). Thanh gồm tên field, thanh preview trải trên cột giá trị (chỉ hiện
+khi có target đã có object), rồi nút +. Dưới đó là các target, mỗi target
 một dòng, các node của nó (property, nhánh) nằm ngay dưới dòng đó. Các ô chọn (target, property, đổi kiểu, khối,
 preset) là cửa sổ tìm kiếm của Utils dạng drop-down: gắn dưới nút, gõ để tìm, mục không dùng
 được thì mờ kèm lý do. Bấm lại đúng nút đã mở cửa sổ thì chỉ đóng nó, không thêm gì. Alt+click
@@ -14,21 +15,23 @@ một foldout bất kỳ thì mở hay gập cả nhánh bên dưới.
 
 ## List
 
-List target và list node là list riêng của pack, theo đúng số đo của list Odin (khung, đệm
-phần tử, tay nắm, nút X):
+List target và list node là list riêng của pack, theo số đo của list Odin (đệm phần tử, chỗ tay
+nắm và nút X):
 
-- Không có thanh tiêu đề riêng: dòng của chủ list (khung `Transition`, dòng target) là tiêu đề,
-  nút + nằm cuối dòng đó. Dòng đầu khung chia cột như một field: tên ở cột nhãn, thanh preview và
-  nút + ở cột giá trị.
+- Không có thanh tiêu đề hay khung riêng: dòng của chủ list (thanh của khung `Transition`, dòng
+  target) là tiêu đề, nút + nằm cuối dòng đó; các phần tử nằm sát viền của khung. Thanh của khung
+  chia cột như một field: tên ở cột nhãn, thanh preview ở cột giá trị.
+- Phần tử sọc xen kẽ và sáng lên dưới chuột như dòng list trên trang settings của Utils; chỉ phần
+  tử trong cùng dưới chuột sáng, phần tử chứa nó thì không.
 - Tay nắm và nút X ngang dòng đầu của phần tử, kể cả khi phần tử đang mở cao. Chỉ dòng đầu chừa
   chỗ cho chúng; các dòng bên dưới bắt đầu dưới giữa tay nắm (list lồng trong phần tử khác thì
   thẳng cột với dòng đầu, để foldout con nằm ngay dưới foldout cha) và cách đều mép trên, dưới,
   phải một khoảng đệm. Cột giá trị thẳng với field thường ở ngoài list, dù phần tử đóng hay mở.
-- Drawer của phần tử gọi `ItemList.MarkFirstRow` với dòng đầu của nó, hay
-  `ItemList.MarkFirstRow(row, out prefix)` khi dòng chia cột nhãn và cột giá trị; list đặt dòng
+- Drawer của phần tử gọi `SectionRows.MarkFirstRow` với dòng đầu của nó, hay
+  `SectionRows.MarkFirstRow(row, out prefix)` khi dòng chia cột nhãn và cột giá trị; list đặt dòng
   đó theo khung phần tử, không theo layout.
-- Nền phần tử, nền list và viền khớp lưới pixel của màn hình, nên ở tỉ lệ màn hình lẻ (125%,
-  150%…) không có khe hay viền tràn giữa hai phần tử.
+- Nền phần tử khớp lưới pixel của màn hình, nên ở tỉ lệ màn hình lẻ (125%, 150%…) không có khe
+  hay viền tràn giữa hai phần tử.
 - Kéo tay nắm thì phần tử bám theo chuột, nổi trên các phần tử khác và không ra khỏi list; các
   phần tử khác trôi mượt để mở khe đúng chỗ nó sẽ nằm. Thả ra thì phần tử vào khe đó.
 - Chuột phải tay nắm mở menu phần tử của Odin (chuyển, nhân bản, xóa phần tử), có vạch sáng bên

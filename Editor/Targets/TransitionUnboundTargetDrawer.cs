@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using RiseOn.Utils.Editor;
 using RiseOn.Utils.Editor.SearchWindow;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
@@ -14,21 +15,18 @@ using Object = UnityEngine.Object;
 
 namespace RiseOn.Transitions.Editor {
     /// <summary>
-    /// Draws a <see cref="TransitionUnboundTarget&lt;T&gt;"/> as <see cref="TransitionDrawer"/> draws a transition: a title bar with the field's name,<br/>
-    /// then over the value column the object to preview it on, the preview slider and the + button, then its nodes as an <see cref="ItemList"/>.<br/>
+    /// Draws a <see cref="TransitionUnboundTarget&lt;T&gt;"/> as <see cref="TransitionDrawer"/> draws a transition, a <see cref="Section"/> that folds:<br/>
+    /// the field's name on the bar, then over the value column the object to preview it on and the preview slider, the + button at its end,<br/>
+    /// then its nodes as <see cref="SectionRows"/>.<br/>
     /// The preview object takes a <typeparamref name="T"/> or what holds one, as a target's object does; it is kept by <see cref="UnboundPreview"/>, never saved.<br/>
     /// The slider shows only while there is a preview object and a node, and previews as a transition's does; without it, the object takes the whole column. Its context menu saves or applies a target preset.
     /// </summary>
     public sealed class TransitionUnboundTargetDrawer<T> : OdinValueDrawer<TransitionUnboundTarget<T>>, IDefinesGenericMenuItems where T : class {
         private const float GAP = 6f;
-        private const float ADD_WIDTH = 18f;
-
-        // The room the layout keeps on each side of the +, about as much as above and below it in Odin's toolbar.
-        private const float ADD_INSET = 2f;
 
         private static readonly GUIContent PREVIEW_TOOLTIP = new(string.Empty, "Hold and drag to preview t from 0 (hidden) to 1 (shown) on the object beside. Letting go puts it back as it was.");
 
-        private readonly ItemList list = new();
+        private readonly SectionRows list = new();
 
         private bool isPreviewing;
         private float preview = 1f;
@@ -36,45 +34,28 @@ namespace RiseOn.Transitions.Editor {
         private Rect headerRect;
         private Action<Rect> pendingWindow;
 
+        protected override void Initialize() {
+            Section.Restore(Property, Property.State.Expanded);
+        }
+
         protected override void DrawPropertyLayout(GUIContent label) {
             var items = Property.Children[nameof(TransitionUnboundTarget<T>.nodes)].Children[0];
 
-            SirenixEditorGUI.BeginIndentedVertical(SirenixGUIStyles.PropertyMargin);
-            DrawHeader(label, items.Children.Count > 0);
-            if (SirenixEditorGUI.BeginFadeGroup(this, Property.State.Expanded)) {
-                list.Draw(items, "Press + to add a property or a branch.", Move, Remove, true);
-                NodeUtils.DrawDuplicates(ValueEntry.SmartValue.nodes);
+            // The bar's object, slider and + first, then the nodes in the section's fade.
+            using (var section = Section.Foldout(Property, label?.text ?? string.Empty, label?.tooltip, buttons: 1, padded: false, barValue: true)) {
+                DrawBarValue(section.BarValue, items.Children.Count > 0);
+                if (section.Button(0, SdfIconType.Plus, "Add a property or a branch")) ShowAdd(section.ButtonRect(0));
+                if (section.Open) DrawNodes(items);
             }
 
-            SirenixEditorGUI.EndFadeGroup();
-            SirenixEditorGUI.EndIndentedVertical();
+            var box = GUILayoutUtility.GetLastRect();
+            if (Event.current.type is EventType.Repaint) headerRect = new Rect(box.x, box.y, box.width, Section.Height);
 
             OpenPendingWindow();
         }
 
-        // The name over the label column; over the value column, the preview object and the slider sharing it, then the + button.
-        private void DrawHeader(GUIContent label, bool hasNodes) {
-            SirenixEditorGUI.BeginHorizontalToolbar();
-            var title = EditorGUILayout.GetControlRect(false, GUILayout.Width(EditorGUIUtility.labelWidth));
-            Property.State.Expanded = SirenixEditorGUI.Foldout(title, Property.State.Expanded, label ?? GUIContent.none);
-
-            // Placed from the header, which is only known outside layout, as the transition's header places its slider.
-            var bar = Event.current.type is EventType.Layout ? default : GUIHelper.GetCurrentLayoutRect();
-            var value = GUILayoutUtility.GetRect(0f, EditorGUIUtility.singleLineHeight, GUILayout.ExpandWidth(true));
-            GUILayout.Space(GAP);
-            GUILayoutUtility.GetRect(ADD_WIDTH + 2f * ADD_INSET, EditorGUIUtility.singleLineHeight, GUILayout.ExpandWidth(false));
-            var add = new Rect(0f, 0f, ADD_WIDTH, EditorGUIUtility.singleLineHeight);
-            if (Event.current.type is not EventType.Layout) {
-                var inside = new Rect(bar.x, bar.y, bar.width - 1f, bar.height - 1f);
-                var inset = (inside.height - add.height) / 2f;
-                add.x = inside.xMax - inset - add.width;
-                add.y = inside.y + inset;
-                value.xMin = bar.x + EditorGUIUtility.labelWidth + 2f;
-                value.xMax = add.x - GAP;
-                value.y = add.y;
-            }
-
-            // The object shares the value column with the slider while there is one, and takes it all while there is none.
+        // The object shares the value column with the slider while there is one, and takes it all while there is none.
+        private void DrawBarValue(Rect value, bool hasNodes) {
             var hasSlider = hasNodes && UnboundPreview.Get(Property) != null && ValueEntry.ValueCount is 1;
             var field = value;
             if (hasSlider) field.width = Mathf.Floor((value.width - GAP) / 2f);
@@ -83,10 +64,12 @@ namespace RiseOn.Transitions.Editor {
 
             var target = DrawObject(field);
             DrawPreview(slider, hasSlider && target != null, target);
-            if (ButtonUtils.IconButton(add, SdfIconType.Plus)) ShowAdd(add);
-            SirenixEditorGUI.EndHorizontalToolbar();
+        }
 
-            if (Event.current.type is EventType.Repaint) headerRect = GUILayoutUtility.GetLastRect();
+        // As the transition's targets.
+        private void DrawNodes(InspectorProperty items) {
+            list.Draw(items.Children.Count, i => items.Children[i].Draw(GUIContent.none), "Press + to add a property or a branch.", Move, Remove, marksFirstRow: true);
+            NodeUtils.DrawDuplicates(ValueEntry.SmartValue.nodes);
         }
 
         // The preview object, named as T; picking another ends a preview running on the one before.

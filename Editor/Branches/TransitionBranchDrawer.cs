@@ -1,3 +1,4 @@
+using RiseOn.Utils.Editor;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
@@ -9,7 +10,7 @@ namespace RiseOn.Transitions.Editor {
     /// <summary>
     /// Draws a <see cref="TransitionBranch&lt;T, U&gt;"/> in place of Odin's reference header: a foldout titled with the path it follows,<br/>
     /// <typeparamref name="U"/> grayed out, and a + button adding a node on the object it reaches, as a target's row adds one;<br/>
-    /// the path is picked when the branch is added, so it has no field of its own. The nodes follow as an <see cref="ItemList"/>.<br/>
+    /// the path is picked when the branch is added, so it has no field of its own. The nodes follow as <see cref="SectionRows"/>.<br/>
     /// When the path cannot be followed, the title is red and an error says why: none picked, a member missing on the way (renamed or removed since),<br/>
     /// or an end of another type.
     /// </summary>
@@ -23,7 +24,7 @@ namespace RiseOn.Transitions.Editor {
 
         private static GUIStyle typeStyle;
 
-        private readonly ItemList list = new();
+        private readonly SectionRows list = new();
 
         protected override void DrawPropertyLayout(GUIContent label) {
             var path = ValueEntry.SmartValue.path;
@@ -32,9 +33,10 @@ namespace RiseOn.Transitions.Editor {
             DrawHeader(new GUIContent(string.IsNullOrEmpty(path) ? "None" : MemberAccess.GetDisplayName(path)), error != null);
 
             if (SirenixEditorGUI.BeginFadeGroup(this, Property.State.Expanded)) {
-                if (error != null) SirenixEditorGUI.ErrorMessageBox(error);
+                if (error != null) HelpBoxUtils.Draw(error, MessageType.Error);
 
-                list.Draw(Property.Children[nameof(TransitionBranch<T, U>.nodes)].Children[0], "Press + to add a property or a branch.", Move, Remove, false);
+                var nodes = Property.Children[nameof(TransitionBranch<T, U>.nodes)].Children[0];
+                list.Draw(nodes.Children.Count, i => nodes.Children[i].Draw(GUIContent.none), "Press + to add a property or a branch.", Move, Remove, marksFirstRow: true);
                 NodeUtils.DrawDuplicates(ValueEntry.SmartValue.nodes);
             }
 
@@ -44,12 +46,12 @@ namespace RiseOn.Transitions.Editor {
         private void DrawHeader(GUIContent title, bool isBroken) {
             typeStyle ??= new GUIStyle(EditorStyles.label) { alignment = TextAnchor.MiddleRight, normal = { textColor = SirenixGUIStyles.LeftAlignedGreyLabel.normal.textColor } };
 
-            var row = ItemList.MarkFirstRow(EditorGUILayout.GetControlRect());
+            var row = SectionRows.MarkFirstRow(EditorGUILayout.GetControlRect());
             var add = row.TakeFromRight(ADD_WIDTH);
             row.xMax -= TYPE_GAP;
             var type = row.TakeFromRight(typeStyle.CalcSize(TYPE_TEXT).x);
             GUI.Label(type, TYPE_TEXT, typeStyle);
-            if (ButtonUtils.IconButton(add, SdfIconType.Plus)) ShowAdd(add);
+            if (Section.IconButton(add, SdfIconType.Plus, "Add a property or a branch")) ShowAdd(add);
 
             if (isBroken) GUIHelper.PushContentColor(ERROR_COLOR);
             Property.State.Expanded = SirenixEditorGUI.Foldout(ref row, GUIUtility.GetControlID(FocusType.Passive, row), title, Property.State.Expanded, true);

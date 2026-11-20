@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using RiseOn.Serializables;
+using RiseOn.Utils.Editor;
 using RiseOn.Utils.Editor.SearchWindow;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
@@ -16,7 +17,7 @@ namespace RiseOn.Transitions.Editor {
     /// a foldout and the label in the label column, the label showing the object's name grayed out while empty, then the object in the value column<br/>
     /// and a + button that adds a node: a property writing one of the members of <typeparamref name="T"/> worth writing, those already written grayed out,<br/>
     /// or a branch reaching another object from it, as <see cref="NodeUtils.ShowAdd"/> picks it.<br/>
-    /// The nodes follow as an <see cref="ItemList"/>, with no header of their own: the row is theirs.<br/>
+    /// The nodes follow as <see cref="SectionRows"/>, with no header of their own: the row is theirs.<br/>
     /// Its context menu changes <typeparamref name="T"/>, which drops the nodes, as they were set up for the type it had, and saves or applies a preset.
     /// </summary>
     [DrawerPriority(0, 0, 2001)]
@@ -25,7 +26,7 @@ namespace RiseOn.Transitions.Editor {
 
         private static GUIStyle placeholderStyle;
 
-        private readonly ItemList list = new();
+        private readonly SectionRows list = new();
 
         private Rect headerRect;
         private Action<Rect> pendingWindow;
@@ -37,7 +38,8 @@ namespace RiseOn.Transitions.Editor {
             if (SirenixEditorGUI.BeginFadeGroup(this, Property.State.Expanded)) {
                 // The row keeps a margin of 2 below it; this makes it the item's padding, so the nodes sit as far from the row as from the item's edges.
                 GUILayout.Space(1f);
-                list.Draw(Property.Children[nameof(TransitionTarget<T>.nodes)].Children[0], "Press + to add a property or a branch.", Move, Remove, false);
+                var nodes = Property.Children[nameof(TransitionTarget<T>.nodes)].Children[0];
+                list.Draw(nodes.Children.Count, i => nodes.Children[i].Draw(GUIContent.none), "Press + to add a property or a branch.", Move, Remove, marksFirstRow: true);
                 NodeUtils.DrawDuplicates(ValueEntry.SmartValue.nodes);
             }
 
@@ -48,7 +50,7 @@ namespace RiseOn.Transitions.Editor {
         // The label and the object are drawn by hand into their rects, inside Unity's property scope, which draws their prefab override marks.
         private void DrawHeader() {
             var row = EditorGUILayout.GetControlRect();
-            var value = ItemList.MarkFirstRow(row, out var prefix);
+            var value = SectionRows.MarkFirstRow(row, out var prefix);
             var add = value.TakeFromRight(ADD_WIDTH);
             if (Event.current.type is EventType.Repaint) headerRect = row;
 
@@ -56,7 +58,7 @@ namespace RiseOn.Transitions.Editor {
             Property.State.Expanded = SirenixEditorGUI.Foldout(ref prefix, GUIUtility.GetControlID(FocusType.Passive, prefix), GUIContent.none, Property.State.Expanded, false);
             DrawLabel(prefix);
             DrawObject(value.SubXMax(2f));
-            if (ButtonUtils.IconButton(add, SdfIconType.Plus)) ShowAdd(add);
+            if (Section.IconButton(add, SdfIconType.Plus, "Add a property or a branch")) ShowAdd(add);
             GUIHelper.PopIndentLevel();
         }
 
