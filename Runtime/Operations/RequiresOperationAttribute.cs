@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 
 namespace RiseOn.Transitions {
     /// <summary>
-    /// Declares an operation a modifier or source needs on its value type, such as <c>[RequiresOperation(typeof(IAddition&lt;&gt;))]</c> on a block of <c>V</c><br/>
-    /// that adds values of <c>V</c>. The Inspector grays the block out for a value type with no implementation of that operation.
+    /// Declares an operation a modifier or source needs on its value type, such as <c>[RequiresOperation(typeof(IAddition&lt;&gt;))]</c> on a block of <c>V</c> that adds values of <c>V</c>.<br/>
+    /// The Inspector grays the block out for a value type with no implementation of that operation.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public sealed class RequiresOperationAttribute : Attribute {

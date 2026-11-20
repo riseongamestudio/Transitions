@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using RiseOn.Serializables;
 using RiseOn.Utils.Editor;
@@ -13,16 +13,13 @@ using UnityEngine;
 
 namespace RiseOn.Transitions.Editor {
     /// <summary>
-    /// Draws a <see cref="TransitionTarget&lt;T&gt;"/> in place of Odin's reference header: one row laid out as any field row,<br/>
-    /// a foldout and the label in the label column, the label showing the object's name grayed out while empty, then the object in the value column<br/>
-    /// and a + button that adds a node: a property writing one of the members of <typeparamref name="T"/> worth writing, those already written grayed out,<br/>
-    /// or a branch reaching another object from it, as <see cref="NodeUtils.ShowAdd"/> picks it.<br/>
+    /// Draws a <see cref="TransitionTarget&lt;T&gt;"/> in place of Odin's reference header: one row laid out as any field row, a foldout and the label in the label column, the label showing the object's name grayed out while empty, then the object in the value column and a + button that adds a node: a property writing one of the members of <typeparamref name="T"/> worth writing, those already written grayed out, or a branch reaching another object from it, as <see cref="NodeUtils.ShowAdd"/> picks it.<br/>
     /// The nodes follow as <see cref="SectionRows"/>, with no header of their own: the row is theirs.<br/>
     /// Its context menu changes <typeparamref name="T"/>, which drops the nodes, as they were set up for the type it had, and saves or applies a preset.
     /// </summary>
     [DrawerPriority(0, 0, 2001)]
     public sealed class TransitionTargetDrawer<T> : OdinValueDrawer<TransitionTarget<T>>, IDefinesGenericMenuItems where T : class {
-        private const float ADD_WIDTH = 18f;
+        private const float AddWidth = 18f;
 
         private static GUIStyle placeholderStyle;
 
@@ -51,7 +48,7 @@ namespace RiseOn.Transitions.Editor {
         private void DrawHeader() {
             var row = EditorGUILayout.GetControlRect();
             var value = SectionRows.MarkFirstRow(row, out var prefix);
-            var add = value.TakeFromRight(ADD_WIDTH);
+            var add = value.TakeFromRight(AddWidth);
             if (Event.current.type is EventType.Repaint) headerRect = row;
 
             GUIHelper.PushIndentLevel(0);

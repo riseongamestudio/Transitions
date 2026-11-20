@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 using RiseOn.Utils.Editor;
 using Sirenix.OdinInspector;
@@ -11,12 +11,9 @@ using UnityEngine;
 
 namespace RiseOn.Transitions.Editor {
     /// <summary>
-    /// Draws a modifier or source field as Odin draws any <c>[SerializeReference]</c> field, with Odin's own field and foldout,<br/>
-    /// but titled with the block's short name, such as <c>Multiplication</c>, by its type registry name: the target and value types are left out,<br/>
-    /// as the field already fixes them, and the full type shows as the tooltip. A click on the field opens <see cref="GenericTypePicker"/><br/>
-    /// with the field's rules in place of Odin's selector.<br/>
-    /// A block holding a single field drawn on one line, such as <c>Constant</c>, takes one row: the value column split in two halves,<br/>
-    /// the block's field on the left, as any block field, and its one field on the right.
+    /// Draws a modifier or source field as Odin draws any <c>[SerializeReference]</c> field, with Odin's own field and foldout, but titled with the block's short name, such as <c>Multiplication</c>, by its type registry name: the target and value types are left out, as the field already fixes them, and the full type shows as the tooltip.<br/>
+    /// A click on the field opens <see cref="GenericTypePicker"/> with the field's rules in place of Odin's selector.<br/>
+    /// A block holding a single field drawn on one line, such as <c>Constant</c>, takes one row: the value column split in two halves, the block's field on the left, as any block field, and its one field on the right.
     /// </summary>
     [DrawerPriority(0, 0, 3000.5)]
     internal sealed class TransitionBlockAttributeDrawer : OdinAttributeDrawer<TransitionBlockAttribute> {

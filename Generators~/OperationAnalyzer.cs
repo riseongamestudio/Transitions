@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -11,27 +11,27 @@ namespace RiseOn.Transitions.Generators {
     /// </summary>
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public sealed class OperationAnalyzer : DiagnosticAnalyzer {
-        private const string CATEGORY = "RiseOn.Transitions";
+        private const string Category = "RiseOn.Transitions";
 
         public static readonly DiagnosticDescriptor Duplicate = new(
             "RTR001", "Operation implemented twice in one assembly",
             "{0} implements {1}, and so does {2} in the same assembly; keep one",
-            CATEGORY, DiagnosticSeverity.Error, true, customTags: WellKnownDiagnosticTags.CompilationEnd);
+            Category, DiagnosticSeverity.Error, true, customTags: WellKnownDiagnosticTags.CompilationEnd);
 
         public static readonly DiagnosticDescriptor Blocked = new(
             "RTR002", "Operation cannot be created",
             "{0} implements {1} but cannot be created: {2}",
-            CATEGORY, DiagnosticSeverity.Error, true);
+            Category, DiagnosticSeverity.Error, true);
 
         public static readonly DiagnosticDescriptor NotPublic = new(
             "RTR003", "Operation is not public",
             "{0} implements {1} but is not public; an assembly that wants to choose it over another can only forward to it through reflection",
-            CATEGORY, DiagnosticSeverity.Warning, true);
+            Category, DiagnosticSeverity.Warning, true);
 
         public static readonly DiagnosticDescriptor Ambiguous = new(
             "RTR004", "Operation implemented by assemblies that do not know each other",
             "{0} is implemented by {1}, and none of these assemblies references the others, so the first by name is used; implement {0} in {2} to choose",
-            CATEGORY, DiagnosticSeverity.Warning, true, customTags: WellKnownDiagnosticTags.CompilationEnd);
+            Category, DiagnosticSeverity.Warning, true, customTags: WellKnownDiagnosticTags.CompilationEnd);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Duplicate, Blocked, NotPublic, Ambiguous);
 
@@ -43,7 +43,7 @@ namespace RiseOn.Transitions.Generators {
         }
 
         private static void Start(CompilationStartAnalysisContext context) {
-            var operation = context.Compilation.GetTypeByMetadataName(OperationSymbols.OPERATION);
+            var operation = context.Compilation.GetTypeByMetadataName(OperationSymbols.Operation);
             if (operation == null) return;
 
             var local = new ConcurrentDictionary<INamedTypeSymbol, ConcurrentBag<INamedTypeSymbol>>(SymbolEqualityComparer.Default);
@@ -85,7 +85,7 @@ namespace RiseOn.Transitions.Generators {
         private static void ReportAmbiguity(CompilationAnalysisContext context, INamedTypeSymbol operation, ConcurrentDictionary<INamedTypeSymbol, ConcurrentBag<INamedTypeSymbol>> local) {
             var byContract = new Dictionary<INamedTypeSymbol, List<INamedTypeSymbol>>(SymbolEqualityComparer.Default);
             foreach (var assembly in context.Compilation.SourceModule.ReferencedAssemblySymbols) {
-                if (assembly.Name != OperationSymbols.PACK_ASSEMBLY && !References(assembly, OperationSymbols.PACK_ASSEMBLY)) continue;
+                if (assembly.Name is not OperationSymbols.PackAssembly && !References(assembly, OperationSymbols.PackAssembly)) continue;
 
                 foreach (var type in OperationSymbols.ListTypes(assembly)) {
                     if (!OperationSymbols.IsPublic(type)) continue;
@@ -110,7 +110,7 @@ namespace RiseOn.Transitions.Generators {
 
             // Unity drops a diagnostic with no file from the Console, so it points at this assembly's generated registry.
             static Location FindRegistry(Compilation compilation) {
-                var tree = compilation.SyntaxTrees.FirstOrDefault(candidate => candidate.FilePath.EndsWith(OperationRegistryGenerator.FILE_NAME));
+                var tree = compilation.SyntaxTrees.FirstOrDefault(candidate => candidate.FilePath.EndsWith(OperationRegistryGenerator.FileName));
                 return tree == null ? Location.None : Location.Create(tree, default);
             }
         }

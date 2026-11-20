@@ -1,8 +1,7 @@
-namespace RiseOn.Transitions {
+﻿namespace RiseOn.Transitions {
     /// <summary>
     /// The implementation of <typeparamref name="TOperation"/> in use, such as <c>Operation&lt;IAddition&lt;Vector2&gt;&gt;.Instance</c>, or null when there is none.<br/>
-    /// It is chosen once, on first use, among every implementation of the loaded assemblies:<br/>
-    /// an assembly that references another wins over it, so a game overrides the pack by implementing the same operation.
+    /// It is chosen once, on first use, among every implementation of the loaded assemblies: an assembly that references another wins over it, so a game overrides the pack by implementing the same operation.
     /// </summary>
     public static class Operation<TOperation> where TOperation : class, IOperation {
         private static TOperation instance;

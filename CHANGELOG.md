@@ -4,6 +4,15 @@ Mọi thay đổi đáng kể của `com.riseon.transitions` được ghi ở đ
 [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), đánh số theo
 [Semantic Versioning](https://semver.org/lang/vi/).
 
+## [0.2.1] - 2026-11-20
+
+### Đổi
+
+- Cần Unity 6000.3, bản đang dùng để phát triển: `package.json` ghi `unity`, nên Package
+  Manager không cài pack vào project Unity cũ hơn.
+- Phụ thuộc RiseOn lên bản phát hành cùng đợt: `com.riseon.serializables` 1.0.5,
+  `com.riseon.utils` 1.0.18, `com.riseon.utils.litmotion` 1.0.1.
+
 ## [0.2.0] - 2026-11-20
 
 ### Đổi

@@ -1,4 +1,4 @@
-namespace RiseOn.Transitions {
+﻿namespace RiseOn.Transitions {
     /// <summary>
     /// A value that changes with the clock and takes no input, such as a tween or a measured size: what modifiers work with.<br/>
     /// It must be a pure function of <c>t</c> and <c>target</c>, and write nothing.

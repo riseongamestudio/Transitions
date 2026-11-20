@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -9,10 +9,9 @@ using Object = UnityEngine.Object;
 
 namespace RiseOn.Transitions {
     /// <summary>
-    /// Reaches another object from the target through public properties (<see cref="Path"/>), one or several in a row, and writes its own nodes on it:<br/>
-    /// a page's root to its <c>RectTransform</c>, or an interface's <c>Root.Group</c> to the <c>CanvasGroup</c> it names.<br/>
-    /// <typeparamref name="U"/> is the type the last property is declared as. The path is read again on every apply, so it follows the object the properties name now;<br/>
-    /// when it reaches nothing, the branch is skipped.
+    /// Reaches another object from the target through public properties (<see cref="Path"/>), one or several in a row, and writes its own nodes on it: a page's root to its <c>RectTransform</c>, or an interface's <c>Root.Group</c> to the <c>CanvasGroup</c> it names.<br/>
+    /// <typeparamref name="U"/> is the type the last property is declared as.<br/>
+    /// The path is read again on every apply, so it follows the object the properties name now; when it reaches nothing, the branch is skipped.
     /// </summary>
     [Serializable]
     public sealed class TransitionBranch<T, U> : ITransitionNode<T>, IUntypedNode, IUntypedBranch where T : class where U : class {

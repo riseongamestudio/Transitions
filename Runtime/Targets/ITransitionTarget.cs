@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using RiseOn.Utils;
 
 namespace RiseOn.Transitions {

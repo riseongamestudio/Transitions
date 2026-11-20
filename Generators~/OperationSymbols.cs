@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
@@ -7,8 +7,8 @@ namespace RiseOn.Transitions.Generators {
     /// Finds operation implementations in a compilation: classes and structs that implement a contract derived from <c>IOperation</c>.
     /// </summary>
     internal static class OperationSymbols {
-        public const string OPERATION = "RiseOn.Transitions.IOperation";
-        public const string PACK_ASSEMBLY = "RiseOn.Transitions";
+        public const string Operation = "RiseOn.Transitions.IOperation";
+        public const string PackAssembly = "RiseOn.Transitions";
 
         /// <summary>
         /// The contracts <paramref name="type"/> implements, such as <c>IAddition&lt;Vector2&gt;</c>; empty when it is not an implementation.

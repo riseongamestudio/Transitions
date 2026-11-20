@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
@@ -7,11 +7,9 @@ using UnityEngine;
 
 namespace RiseOn.Transitions.Editor {
     /// <summary>
-    /// Plays transitions on the objects they target for the Inspector's preview, and puts every object back exactly as it was when the preview ends:<br/>
-    /// each member the transitions write is read before the first frame and set back after, whatever <c>t</c> = 1 gives,<br/>
-    /// so a transition that does not end where it began, or a rest value typed in by hand, leaves nothing behind.<br/>
-    /// It ends when its owner ends it, and also when anything cuts it short: a script reload, a change of play mode, or a save, before anything is written,<br/>
-    /// so no saved scene, prefab or asset ever holds a previewed value. Out of play mode, the rest values the preview read are forgotten too.<br/>
+    /// Plays transitions on the objects they target for the Inspector's preview, and puts every object back exactly as it was when the preview ends: each member the transitions write is read before the first frame and set back after, whatever <c>t</c> = 1 gives, so a transition that does not end where it began, or a rest value typed in by hand, leaves nothing behind.<br/>
+    /// It ends when its owner ends it, and also when anything cuts it short: a script reload, a change of play mode, or a save, before anything is written, so no saved scene, prefab or asset ever holds a previewed value.<br/>
+    /// Out of play mode, the rest values the preview read are forgotten too.<br/>
     /// One preview runs at a time, as there is one pointer to hold a slider with; a new one ends the one before.
     /// </summary>
     internal static class TransitionPreview {

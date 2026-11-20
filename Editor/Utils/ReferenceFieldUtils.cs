@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
@@ -13,7 +13,8 @@ namespace RiseOn.Transitions.Editor {
     internal static class ReferenceFieldUtils {
         /// <summary>
         /// Draws <paramref name="property"/>'s value in Odin's reference field, titled <paramref name="title"/>, the full type as its tooltip.<br/>
-        /// A click on it calls <paramref name="pick"/> with its rect. A value dragged onto it from another reference field is assigned on the next repaint.
+        /// A click on it calls <paramref name="pick"/> with its rect.<br/>
+        /// A value dragged onto it from another reference field is assigned on the next repaint.
         /// </summary>
         public static void Draw(InspectorProperty property, Rect field, int id, string title, Action<Rect> pick) {
             var current = Event.current;

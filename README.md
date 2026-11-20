@@ -21,22 +21,25 @@ Package `com.riseon.transitions`, namespace `RiseOn.Transitions`.
 
 | Phụ thuộc | Cách có | Dùng cho |
 |---|---|---|
-| Unity 6000.3 | | Bản đang dùng để phát triển. Bộ sinh code chạy trên Roslyn 4.3, bản Unity này mang theo |
-| [`com.riseon.serializables`](https://github.com/riseongamestudio/Serializables#readme) 1.0.1 | Tự cài theo `package.json` | `ListSerRef`, `SerObject` |
-| [`com.riseon.utils`](https://github.com/riseongamestudio/Utils/tree/main/Core#readme) 1.0.13 | Tự cài theo `package.json` | `AllowGenerics`: ô chọn modifier và source tự đóng generic theo kiểu của ô; `DirectionExt` cho hướng của `Offset`; `RectFieldUtils` cho các dòng chia đôi |
-| [`com.riseon.utils.litmotion`](https://github.com/riseongamestudio/Utils/tree/main/LitMotion#readme) 1.0.0 | Tự cài theo `package.json` | `EaseExt` cho ease của `Tween`, `Retiming` |
-| [LitMotion](https://github.com/annulusgames/LitMotion) 2.0.2 | Tự cài theo `package.json` | Các hàm ease |
-| [UniTask](https://github.com/Cysharp/UniTask) (`com.cysharp.unitask`) 2.5.11 | Tự cài theo `package.json`, cần scope `com.cysharp` | Vòng dọn giá trị nghỉ của object đã hủy |
-| uGUI (`com.unity.ugui`) 2.0.0 | Tự cài theo `package.json` | Đo `RectTransform` |
+| Unity 6000.3 | | Bản đang dùng để phát triển |
 | [Odin Inspector](https://odininspector.com) | Cài tay từ Asset Store | Toàn bộ Inspector của pack |
+| [`com.riseon.serializables`](https://github.com/riseongamestudio/Serializables#readme) 1.0.5 | Tự cài theo `package.json` | `ListSerRef`, `SerObject` |
+| [`com.riseon.utils`](https://github.com/riseongamestudio/Utils/tree/main/Core#readme) 1.0.18 | Tự cài theo `package.json` | `AllowGenerics`: ô chọn modifier và source tự đóng generic theo kiểu của ô; `DirectionExt` cho hướng của `Offset`; `RectFieldUtils` cho các dòng chia đôi |
+| [`com.riseon.utils.litmotion`](https://github.com/riseongamestudio/Utils/tree/main/LitMotion#readme) 1.0.1 | Tự cài theo `package.json` | `EaseExt` cho ease của `Tween`, `Retiming` |
+| [`com.annulusgames.lit-motion`](https://github.com/annulusgames/LitMotion) 2.0.2 | Tự cài theo `package.json`, từ OpenUPM | Các hàm ease |
+| [`com.cysharp.unitask`](https://github.com/Cysharp/UniTask) 2.5.11 | Tự cài theo `package.json`, từ OpenUPM | Vòng dọn giá trị nghỉ của object đã hủy |
+| `com.unity.ugui` 2.0.0 | Tự cài theo `package.json` | Đo `RectTransform` |
 
-"Tự cài" là khi cài qua registry; cài bằng git URL thì phải cài các package kia
-trước. Thiếu Odin thì project báo một lỗi từ `RiseOn.Transitions.Requirements`.
+"Tự cài" là Package Manager tự lấy theo version từ Unity Registry và các registry khai
+trong manifest, cả khi cài pack bằng git URL. Odin không có trên UPM nên phải cài vào
+project trước. Thiếu Odin thì project báo một lỗi từ `RiseOn.Transitions.Requirements`.
+Bộ sinh code của pack chạy trên Roslyn 4.3, bản Unity trên mang theo.
 
 ## Cài đặt
 
-**Registry RiseOn** (khuyên dùng): thêm registry RiseOn với scope `com.riseon`, và registry OpenUPM với scope
-`com.annulusgames` và `com.cysharp` vào `Packages/manifest.json`, rồi thêm package:
+**Registry RiseOn** (khuyên dùng): thêm registry RiseOn với scope `com.riseon`, và
+registry OpenUPM với scope `com.annulusgames` và `com.cysharp` vào
+`Packages/manifest.json`, rồi thêm package:
 
 ```json
 {
@@ -53,12 +56,15 @@ trước. Thiếu Odin thì project báo một lỗi từ `RiseOn.Transitions.Re
     }
   ],
   "dependencies": {
-    "com.riseon.transitions": "0.2.0"
+    "com.riseon.transitions": "0.2.1"
   }
 }
 ```
 
-**Git URL**: cài các phụ thuộc trước, rồi *Package Manager → + → Add package from git URL*:
+**Git URL**: phụ thuộc vẫn lấy theo version từ registry, nên manifest cần OpenUPM như ví
+dụ trên; `com.riseon.utils`, `com.riseon.serializables` và `com.riseon.utils.litmotion`
+lấy từ registry RiseOn, hoặc cài bằng git URL trước theo thứ tự này. Rồi
+*Package Manager → + → Add package from git URL*:
 
 ```
 https://github.com/riseongamestudio/Transitions.git
@@ -81,9 +87,9 @@ Một chuyển cảnh là các tầng lồng nhau, cộng các khối tính giá
 | Source | `ITransitionSource<T, V>` | Một giá trị theo `t`, là toán hạng của modifier: hằng, tween, curve, đo kích thước… |
 
 Lúc chạy, mỗi property đưa giá trị lúc nghỉ cho modifier rồi ghi kết quả vào object;
-property là chỗ duy nhất ghi. Giá trị lúc nghỉ là trạng thái hiện xong (`t` = 1): mặc định
-là giá trị member có trước lần ghi đầu tiên của bất kỳ chuyển cảnh nào, giữ tới khi object
-bị hủy; hoặc nhập tay.
+property là chỗ duy nhất ghi. Giá trị lúc nghỉ là trạng thái hiện xong (`t` = 1): mặc
+định là giá trị member có trước lần ghi đầu tiên của bất kỳ chuyển cảnh nào, giữ tới khi
+object bị hủy; hoặc nhập tay.
 
 Modifier và source cần cộng, nhân hay nội suy giá trị `V` thì lấy phép đó qua
 [operation](Runtime/Operations/README.md): pack có sẵn cho số, vector, màu, rect,
@@ -101,11 +107,13 @@ quaternion; kiểu khác thì cài thêm một lớp, bộ sinh code tự đăng
    [SerializeField] private Transition show = new();
    ```
 
-2. Kéo object thả vào khung của field, hoặc bấm + rồi chọn GameObject, chọn kiểu sẽ làm target: chính nó, lớp cha,
-   interface, hay một component của GameObject.
+2. Kéo object thả vào khung của field, hoặc bấm + rồi chọn GameObject, chọn kiểu sẽ làm
+   target: chính nó, lớp cha, interface, hay một component của GameObject.
 3. Bấm + cuối dòng target, chọn property, rồi chọn modifier. Ví dụ trượt từ dưới lên:
-   `anchoredPosition` với `Addition`, source `Tween` từ `Offset` (Down) về `Constant` (0).
-4. Giữ và kéo thanh preview trên dòng đầu của khung để xem; thả ra thì mọi object về như cũ.
+   `anchoredPosition` với `Addition`, source `Tween` từ `Offset` (Down) về `Constant`
+   (0).
+4. Giữ và kéo thanh preview trên dòng đầu của khung để xem; thả ra thì mọi object về như
+   cũ.
 
 **Bằng code**
 
@@ -121,11 +129,12 @@ show.Add(group).Add(g => g.alpha, new MultiplicationModifier<CanvasGroup, float>
 show.Apply(t);   // t từ 0 (ẩn) tới 1 (hiện)
 ```
 
-Lần ghi đầu vào một member đọc giá trị đang có làm giá trị lúc nghỉ, nên object phải đang ở
-trạng thái hiện xong lúc chuyển cảnh đầu tiên chạm vào nó (vừa sinh từ prefab chẳng hạn).
+Lần ghi đầu vào một member đọc giá trị đang có làm giá trị lúc nghỉ, nên object phải
+đang ở trạng thái hiện xong lúc chuyển cảnh đầu tiên chạm vào nó (vừa sinh từ prefab
+chẳng hạn).
 
-**Áp lên object chỉ biết lúc chạy**: khai `TransitionUnboundTarget<T>`, `T` thường là interface
-nêu những gì cần chạm tới, rồi gọi cho từng object:
+**Áp lên object chỉ biết lúc chạy**: khai `TransitionUnboundTarget<T>`, `T` thường là
+interface nêu những gì cần chạm tới, rồi gọi cho từng object:
 
 ```csharp
 [SerializeField] private TransitionUnboundTarget<ICoverable> cover = new();

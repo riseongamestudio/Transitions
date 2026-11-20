@@ -1,10 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 
 namespace RiseOn.Transitions {
     /// <summary>
-    /// What the Editor reaches on a target without knowing its type: presets name the role, clear the object and copy the nodes,<br/>
-    /// a change of type carries the object over, and a preview saves and restores the members written.
+    /// What the Editor reaches on a target without knowing its type: presets name the role, clear the object and copy the nodes, a change of type carries the object over, and a preview saves and restores the members written.
     /// </summary>
     internal interface IUntypedTarget : IUntypedNodes {
         string Label { get; set; }

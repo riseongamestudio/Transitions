@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,19 +15,17 @@ using Object = UnityEngine.Object;
 
 namespace RiseOn.Transitions.Editor {
     /// <summary>
-    /// Draws a <see cref="Transition"/> as a <see cref="Section"/> that folds: the field's name on the bar over the label column,<br/>
-    /// a preview slider over the value column and the + button at its end, then its targets as <see cref="SectionRows"/> whose rows meet the border.<br/>
+    /// Draws a <see cref="Transition"/> as a <see cref="Section"/> that folds: the field's name on the bar over the label column, a preview slider over the value column and the + button at its end, then its targets as <see cref="SectionRows"/> whose rows meet the border.<br/>
     /// Its context menu, Odin's, saves or applies a preset.<br/>
-    /// The slider shows only while a target has an object, and acts only while held: pressing it saves every member the transition writes,<br/>
-    /// dragging applies <c>t</c>, and letting go sets every saved member back, as <see cref="TransitionPreview"/> does. Nothing is recorded for Undo.<br/>
-    /// A target is added by dropping an object on the box, which asks which type to target it as: its own, a base class or an interface,<br/>
-    /// or one of its components for a GameObject. The + button picks one in one drop-down: a GameObject beside the field,<br/>
-    /// then the type to target it as; closing it with nothing picked adds a None target, as Odin's + does.
+    /// The slider shows only while a target has an object, and acts only while held: pressing it saves every member the transition writes, dragging applies <c>t</c>, and letting go sets every saved member back, as <see cref="TransitionPreview"/> does.<br/>
+    /// Nothing is recorded for Undo.<br/>
+    /// A target is added by dropping an object on the box, which asks which type to target it as: its own, a base class or an interface, or one of its components for a GameObject.<br/>
+    /// The + button picks one in one drop-down: a GameObject beside the field, then the type to target it as; closing it with nothing picked adds a None target, as Odin's + does.
     /// </summary>
     public sealed class TransitionDrawer : OdinValueDrawer<Transition>, IDefinesGenericMenuItems {
-        private static readonly GUIContent PREVIEW_TOOLTIP = new(string.Empty, "Hold and drag to preview t from 0 (hidden) to 1 (shown). Letting go puts every object back as it was.");
-        private static readonly Color DROP_FACE = new(.3f, .6f, 1f, .1f);
-        private static readonly Color DROP_OUTLINE = new(.3f, .6f, 1f, 1f);
+        private static readonly GUIContent previewTooltip = new(string.Empty, "Hold and drag to preview t from 0 (hidden) to 1 (shown). Letting go puts every object back as it was.");
+        private static readonly Color dropFace = new(.3f, .6f, 1f, .1f);
+        private static readonly Color dropOutline = new(.3f, .6f, 1f, 1f);
 
         private readonly SectionRows list = new();
 
@@ -105,7 +103,7 @@ namespace RiseOn.Transitions.Editor {
             // Drawn in every event, as it takes a control ID: drawn only on repaint, it would shift the ID of every control after it between events,
             // so none of them would keep the focus or the press it took. What it would act on is used up above, so it only shows the value.
             GUI.HorizontalSlider(rect, isPreviewing ? preview : 1f, 0f, 1f);
-            if (current.type is EventType.Repaint) GUI.Label(rect, PREVIEW_TOOLTIP);
+            if (current.type is EventType.Repaint) GUI.Label(rect, previewTooltip);
 
             float ToT(float x) {
                 return Mathf.Clamp01((x - rect.x) / rect.width);
@@ -172,8 +170,8 @@ namespace RiseOn.Transitions.Editor {
                 // Rounded as the section's box, on the pixel grid as its border is.
                 isDropHighlighted = false;
                 var shape = PixelUtils.Snap(rect);
-                GUI.DrawTexture(shape, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0f, DROP_FACE, 0f, Section.Radius);
-                GUI.DrawTexture(shape, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0f, DROP_OUTLINE, 1f, Section.Radius);
+                GUI.DrawTexture(shape, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0f, dropFace, 0f, Section.Radius);
+                GUI.DrawTexture(shape, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0f, dropOutline, 1f, Section.Radius);
                 return;
             }
 

@@ -1,4 +1,4 @@
-namespace RiseOn.Transitions {
+﻿namespace RiseOn.Transitions {
     /// <summary>
     /// Adds two values of <typeparamref name="V"/>; zero is its neutral value.
     /// </summary>

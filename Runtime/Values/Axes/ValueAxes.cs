@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +9,7 @@ namespace RiseOn.Transitions {
     /// Reading and writing go through typed delegates, so they do not allocate.
     /// </summary>
     public static class ValueAxes {
-        private static readonly Dictionary<Type, string[]> NAMES = new();
+        private static readonly Dictionary<Type, string[]> namesByType = new();
 
         static ValueAxes() {
             string[] vector = { nameof(Vector4.x), nameof(Vector4.y), nameof(Vector4.z), nameof(Vector4.w) };
@@ -48,7 +48,7 @@ namespace RiseOn.Transitions {
         /// Call it from a <see cref="RuntimeInitializeOnLoadMethodAttribute"/> method, and from an <c>[InitializeOnLoadMethod]</c> one so the Inspector lists the axes.
         /// </summary>
         public static void Register<TStruct>(string[] names, Func<TStruct, int, float> read, Func<TStruct, int, float, TStruct> write) where TStruct : struct {
-            NAMES[typeof(TStruct)] = names;
+            namesByType[typeof(TStruct)] = names;
             ValueAxes<TStruct>.names = names;
             ValueAxes<TStruct>.read = read;
             ValueAxes<TStruct>.write = write;
@@ -59,7 +59,7 @@ namespace RiseOn.Transitions {
         /// </summary>
         public static IReadOnlyList<string> GetNames(Type type) {
             EnsureRegistered();
-            return NAMES.TryGetValue(type, out var names) ? names : Array.Empty<string>();
+            return namesByType.TryGetValue(type, out var names) ? names : Array.Empty<string>();
         }
 
         // Touching the class runs its static constructor, which registers the built-in types.

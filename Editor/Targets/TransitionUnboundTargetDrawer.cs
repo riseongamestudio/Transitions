@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,16 +15,15 @@ using Object = UnityEngine.Object;
 
 namespace RiseOn.Transitions.Editor {
     /// <summary>
-    /// Draws a <see cref="TransitionUnboundTarget&lt;T&gt;"/> as <see cref="TransitionDrawer"/> draws a transition, a <see cref="Section"/> that folds:<br/>
-    /// the field's name on the bar, then over the value column the object to preview it on and the preview slider, the + button at its end,<br/>
-    /// then its nodes as <see cref="SectionRows"/>.<br/>
+    /// Draws a <see cref="TransitionUnboundTarget&lt;T&gt;"/> as <see cref="TransitionDrawer"/> draws a transition, a <see cref="Section"/> that folds: the field's name on the bar, then over the value column the object to preview it on and the preview slider, the + button at its end, then its nodes as <see cref="SectionRows"/>.<br/>
     /// The preview object takes a <typeparamref name="T"/> or what holds one, as a target's object does; it is kept by <see cref="UnboundPreview"/>, never saved.<br/>
-    /// The slider shows only while there is a preview object and a node, and previews as a transition's does; without it, the object takes the whole column. Its context menu saves or applies a target preset.
+    /// The slider shows only while there is a preview object and a node, and previews as a transition's does; without it, the object takes the whole column.<br/>
+    /// Its context menu saves or applies a target preset.
     /// </summary>
     public sealed class TransitionUnboundTargetDrawer<T> : OdinValueDrawer<TransitionUnboundTarget<T>>, IDefinesGenericMenuItems where T : class {
-        private const float GAP = 6f;
+        private const float Gap = 6f;
 
-        private static readonly GUIContent PREVIEW_TOOLTIP = new(string.Empty, "Hold and drag to preview t from 0 (hidden) to 1 (shown) on the object beside. Letting go puts it back as it was.");
+        private static readonly GUIContent previewTooltip = new(string.Empty, "Hold and drag to preview t from 0 (hidden) to 1 (shown) on the object beside. Letting go puts it back as it was.");
 
         private readonly SectionRows list = new();
 
@@ -58,9 +57,9 @@ namespace RiseOn.Transitions.Editor {
         private void DrawBarValue(Rect value, bool hasNodes) {
             var hasSlider = hasNodes && UnboundPreview.Get(Property) != null && ValueEntry.ValueCount is 1;
             var field = value;
-            if (hasSlider) field.width = Mathf.Floor((value.width - GAP) / 2f);
+            if (hasSlider) field.width = Mathf.Floor((value.width - Gap) / 2f);
             var slider = value;
-            slider.xMin = field.xMax + GAP;
+            slider.xMin = field.xMax + Gap;
 
             var target = DrawObject(field);
             DrawPreview(slider, hasSlider && target != null, target);
@@ -118,7 +117,7 @@ namespace RiseOn.Transitions.Editor {
             }
 
             GUI.HorizontalSlider(rect, isPreviewing ? preview : 1f, 0f, 1f);
-            if (current.type is EventType.Repaint) GUI.Label(rect, PREVIEW_TOOLTIP);
+            if (current.type is EventType.Repaint) GUI.Label(rect, previewTooltip);
 
             float ToT(float x) {
                 return Mathf.Clamp01((x - rect.x) / rect.width);

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Object = UnityEngine.Object;
 using RiseOn.Utils.Editor.SearchWindow;
 using RiseOn.Utils.Editor;
@@ -10,8 +10,7 @@ using UnityEngine;
 
 namespace RiseOn.Transitions.Editor {
     /// <summary>
-    /// Draws a None target, which the + button leaves when its pick is dropped, as Odin draws an empty reference field,<br/>
-    /// whose click picks it the same way: a GameObject beside the field, then the type to target it as.<br/>
+    /// Draws a None target, which the + button leaves when its pick is dropped, as Odin draws an empty reference field, whose click picks it the same way: a GameObject beside the field, then the type to target it as.<br/>
     /// Odin's own picker for it cannot build a <see cref="TransitionTarget{T}"/>.
     /// </summary>
     [DrawerPriority(0, 0, 2001)]

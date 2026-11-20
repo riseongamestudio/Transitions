@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using RiseOn.Utils;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -11,7 +11,8 @@ namespace RiseOn.Transitions {
     [Serializable, TypeRegistryItem("Offset", "Measure")]
     public sealed class OffsetSource : ITransitionSource<Component, Vector2> {
         /// <summary>
-        /// <see cref="Self"/>: the target's own size along the direction. <see cref="Parent"/>: the parent's size.<br/>
+        /// <see cref="Self"/>: the target's own size along the direction.<br/>
+        /// <see cref="Parent"/>: the parent's size.<br/>
         /// <see cref="OutOfParent"/>: far enough to leave the parent wholly from anywhere inside it, the parent's size plus the target's own.<br/>
         /// <see cref="Units"/>: a fixed number of units.
         /// </summary>

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
@@ -7,26 +7,25 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace RiseOn.Transitions.Generators {
     /// <summary>
-    /// Writes one registry per assembly that references the pack, handing every operation it implements to <c>Operation&lt;TOperation&gt;</c>,<br/>
-    /// and marks the assembly with <c>[assembly: OperationRegistry]</c> so it is not scanned at run time.<br/>
+    /// Writes one registry per assembly that references the pack, handing every operation it implements to <c>Operation&lt;TOperation&gt;</c>, and marks the assembly with <c>[assembly: OperationRegistry]</c> so it is not scanned at run time.<br/>
     /// The registry is written even when the assembly implements nothing, so the mark is always there.
     /// </summary>
     [Generator(LanguageNames.CSharp)]
     public sealed class OperationRegistryGenerator : IIncrementalGenerator {
-        public const string FILE_NAME = "OperationRegistry.g.cs";
+        public const string FileName = "OperationRegistry.g.cs";
 
         public void Initialize(IncrementalGeneratorInitializationContext context) {
             var registries = context.CompilationProvider.Select(static (compilation, _) => (compilation.AssemblyName, Found: Collect(compilation)));
             context.RegisterSourceOutput(registries, static (output, registry) => {
                 if (registry.Found == null) return;
 
-                output.AddSource(FILE_NAME, SourceText.From(Write(registry.AssemblyName, registry.Found), Encoding.UTF8));
+                output.AddSource(FileName, SourceText.From(Write(registry.AssemblyName, registry.Found), Encoding.UTF8));
             });
         }
 
         // Null when the compilation does not see the pack; otherwise the fully qualified names of what the registry can create.
         private static ImmutableArray<string>? Collect(Compilation compilation) {
-            var operation = compilation.GetTypeByMetadataName(OperationSymbols.OPERATION);
+            var operation = compilation.GetTypeByMetadataName(OperationSymbols.Operation);
             if (operation == null) return null;
 
             return OperationSymbols.ListTypes(compilation.Assembly)

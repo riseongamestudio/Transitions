@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,16 +15,13 @@ using UnityEngine;
 namespace RiseOn.Transitions.Editor {
     /// <summary>
     /// What the Inspector does the same on every list of nodes: that of a target, a branch, or an unbound target.<br/>
-    /// Adding one picks it in one window listing, as one list by name as code completion does, both kinds of node:<br/>
-    /// a property writing a member worth writing, those already written grayed out; and a branch following a member to an object,<br/>
-    /// then step by step on from the type it reaches until Branch Here, its row showing the arrow of a folder.<br/>
+    /// Adding one picks it in one window listing, as one list by name as code completion does, both kinds of node: a property writing a member worth writing, those already written grayed out; and a branch following a member to an object, then step by step on from the type it reaches until Branch Here, its row showing the arrow of a folder.<br/>
     /// Every row shows the icon of the member's type, named in brackets after it.<br/>
     /// Two interfaces declaring one name are two rows, each named with its interface, as <c>IA.Value</c>.
     /// </summary>
     internal static class NodeUtils {
         /// <summary>
-        /// Opens the window picking a node for a list of nodes of <paramref name="type"/> under <paramref name="button"/>, None first;<br/>
-        /// <paramref name="add"/> gets a maker of the node picked, called once for each value the list is drawn for, null for None.
+        /// Opens the window picking a node for a list of nodes of <paramref name="type"/> under <paramref name="button"/>, None first; <paramref name="add"/> gets a maker of the node picked, called once for each value the list is drawn for, null for None.
         /// </summary>
         public static void ShowAdd(Rect button, Type type, ICollection<string> written, Action<Func<object>> add) {
             ChoiceSearchWindow window = null;
@@ -96,8 +93,7 @@ namespace RiseOn.Transitions.Editor {
         }
 
         /// <summary>
-        /// The object the nodes of the list holding <paramref name="property"/> write on now, as the Inspector sees it:<br/>
-        /// a target's object, an unbound target's preview object, or what a branch reaches from that of the list holding it; null when there is none.
+        /// The object the nodes of the list holding <paramref name="property"/> write on now, as the Inspector sees it: a target's object, an unbound target's preview object, or what a branch reaches from that of the list holding it; null when there is none.
         /// </summary>
         public static object FindObject(InspectorProperty property) {
             for (var parent = property.Parent; parent != null; parent = parent.Parent) {

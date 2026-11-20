@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -10,10 +10,8 @@ using Object = UnityEngine.Object;
 namespace RiseOn.Transitions {
     /// <summary>
     /// What transitions keep per object and member, made on the first write: the access to it, and for a property, its rest value.<br/>
-    /// A member has one rest value, the value it had before any transition first wrote it, however many transitions write it, kept while its object lives;<br/>
-    /// the access is kept with it, so one transition written on many objects binds each once.<br/>
-    /// Slots are grouped by object, and a sweep on the main thread checks one object a frame, in turn, dropping those gone:<br/>
-    /// a Unity object once destroyed; any other object once collected, as the hub holds it weakly, the access included, so it never keeps one alive.
+    /// A member has one rest value, the value it had before any transition first wrote it, however many transitions write it, kept while its object lives; the access is kept with it, so one transition written on many objects binds each once.<br/>
+    /// Slots are grouped by object, and a sweep on the main thread checks one object a frame, in turn, dropping those gone: a Unity object once destroyed; any other object once collected, as the hub holds it weakly, the access included, so it never keeps one alive.
     /// </summary>
     internal static class TransitionRestHub {
         private static readonly List<Row> rows = new();

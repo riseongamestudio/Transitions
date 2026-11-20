@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -11,14 +11,13 @@ using Object = UnityEngine.Object;
 
 namespace RiseOn.Transitions.Editor {
     /// <summary>
-    /// What the Inspector offers for targets. The types an object can be targeted as: its own type, each base class that declares<br/>
-    /// a member worth writing or one a branch can follow, and each interface with one; a GameObject offers itself and, in a folder each, its components.<br/>
+    /// What the Inspector offers for targets.<br/>
+    /// The types an object can be targeted as: its own type, each base class that declares a member worth writing or one a branch can follow, and each interface with one; a GameObject offers itself and, in a folder each, its components.<br/>
     /// The objects a transition can target from where it is: every GameObject of its scene, or of its prefab, a folder each.<br/>
-    /// The members worth writing: the writable properties of the type, without those of <see cref="Object"/> and <see cref="Component"/>,<br/>
-    /// such as <c>name</c> and <c>hideFlags</c>, which no transition animates.
+    /// The members worth writing: the writable properties of the type, without those of <see cref="Object"/> and <see cref="Component"/>, such as <c>name</c> and <c>hideFlags</c>, which no transition animates.
     /// </summary>
     internal static class TargetTypeUtils {
-        private static readonly Type[] ROOTS = { typeof(Object), typeof(Component), typeof(ScriptableObject) };
+        private static readonly Type[] roots = { typeof(Object), typeof(Component), typeof(ScriptableObject) };
 
         /// <summary>
         /// The object to target and the type to target it as, for each type <paramref name="source"/> offers, under <paramref name="prefix"/>.
@@ -42,8 +41,7 @@ namespace RiseOn.Transitions.Editor {
         }
 
         /// <summary>
-        /// The types the GameObject of <paramref name="target"/>'s object offers, as <see cref="ListChoices"/> lists them, each grayed out unless<br/>
-        /// every property of <paramref name="target"/> keeps working on it: the one in use, and those missing a member or not fitting a modifier, with why.
+        /// The types the GameObject of <paramref name="target"/>'s object offers, as <see cref="ListChoices"/> lists them, each grayed out unless every property of <paramref name="target"/> keeps working on it: the one in use, and those missing a member or not fitting a modifier, with why.
         /// </summary>
         public static IEnumerable<SearchChoice<(Object Holder, Type Type)>> ListReplaceChoices(ITransitionTarget target) {
             var source = ((IUntypedTarget)target).Object;
@@ -59,8 +57,7 @@ namespace RiseOn.Transitions.Editor {
         }
 
         /// <summary>
-        /// The names of <paramref name="target"/>'s nodes that would not keep working on <paramref name="type"/>: the members and paths<br/>
-        /// <paramref name="type"/> lacks or has of another type, and those whose modifier does not work on <paramref name="type"/>.
+        /// The names of <paramref name="target"/>'s nodes that would not keep working on <paramref name="type"/>: the members and paths <paramref name="type"/> lacks or has of another type, and those whose modifier does not work on <paramref name="type"/>.
         /// </summary>
         public static List<string> FindLost(ITransitionTarget target, Type type) {
             var lost = new List<string>();
@@ -72,9 +69,9 @@ namespace RiseOn.Transitions.Editor {
         }
 
         /// <summary>
-        /// Every GameObject beside <paramref name="owner"/>, in hierarchy order, a folder each holding the types it offers: the GameObjects<br/>
-        /// of the prefab it belongs to (open in Prefab Mode or as an asset), or else of its scene. A name worn by several GameObjects<br/>
-        /// is told apart by the path of its parent. The search window shows the folders above a result, such as <c>Counter › CanvasGroup</c>.
+        /// Every GameObject beside <paramref name="owner"/>, in hierarchy order, a folder each holding the types it offers: the GameObjects of the prefab it belongs to (open in Prefab Mode or as an asset), or else of its scene.<br/>
+        /// A name worn by several GameObjects is told apart by the path of its parent.<br/>
+        /// The search window shows the folders above a result, such as <c>Counter › CanvasGroup</c>.
         /// </summary>
         public static IEnumerable<SearchChoice<(Object Holder, Type Type)>> ListHierarchyChoices(Object owner) {
             var gameObjects = ListRoots(owner).SelectMany(root => root.GetComponentsInChildren<Transform>(true)).Select(transform => transform.gameObject).ToList();
@@ -106,8 +103,7 @@ namespace RiseOn.Transitions.Editor {
         }
 
         /// <summary>
-        /// Unity's own icon for its object types, such as a component's; an interface or a plain class gets the one Unity marks types with,<br/>
-        /// as on the Project window's Search by Type button, so every row of a list has an icon.
+        /// Unity's own icon for its object types, such as a component's; an interface or a plain class gets the one Unity marks types with, as on the Project window's Search by Type button, so every row of a list has an icon.
         /// </summary>
         public static Texture2D GetIcon(Type type) {
             var icon = typeof(Object).IsAssignableFrom(type) ? AssetPreview.GetMiniTypeThumbnail(type) : null;
@@ -120,7 +116,7 @@ namespace RiseOn.Transitions.Editor {
         }
 
         public static IEnumerable<PropertyInfo> ListMembers(Type type) {
-            return MemberAccess.List(type).Where(member => !ROOTS.Contains(member.DeclaringType));
+            return MemberAccess.List(type).Where(member => !roots.Contains(member.DeclaringType));
         }
 
         /// <summary>
@@ -138,9 +134,8 @@ namespace RiseOn.Transitions.Editor {
         }
 
         /// <summary>
-        /// A new target of <paramref name="type"/> on <paramref name="holder"/>, named as <paramref name="old"/>, carrying its nodes over as they are:<br/>
-        /// each property whose member <paramref name="type"/> has, of the same value type, and whose modifier works on <paramref name="type"/>, as any does on a type deriving<br/>
-        /// from the old one, and each branch whose path <paramref name="type"/> has, to the same type. The names of those left out come back in <paramref name="dropped"/>; empty slots are kept.
+        /// A new target of <paramref name="type"/> on <paramref name="holder"/>, named as <paramref name="old"/>, carrying its nodes over as they are: each property whose member <paramref name="type"/> has, of the same value type, and whose modifier works on <paramref name="type"/>, as any does on a type deriving from the old one, and each branch whose path <paramref name="type"/> has, to the same type.<br/>
+        /// The names of those left out come back in <paramref name="dropped"/>; empty slots are kept.
         /// </summary>
         public static ITransitionTarget Retarget(ITransitionTarget old, Type type, Object holder, out List<string> dropped) {
             var from = (IUntypedTarget)old;
@@ -169,7 +164,7 @@ namespace RiseOn.Transitions.Editor {
         private static IEnumerable<Type> ListTypes(Type type) {
             yield return type;
 
-            for (var parent = type.BaseType; parent != null && !ROOTS.Contains(parent); parent = parent.BaseType) {
+            for (var parent = type.BaseType; parent != null && !roots.Contains(parent); parent = parent.BaseType) {
                 if (ListMembers(parent).Concat(MemberAccess.ListReadable(parent)).Any(member => member.DeclaringType == parent)) yield return parent;
             }
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,8 +8,7 @@ namespace RiseOn.Transitions {
     /// <summary>
     /// Collects every operation implementation once, then picks one per contract for <see cref="Operation&lt;TOperation&gt;"/>.<br/>
     /// An assembly marked with <see cref="OperationRegistryAttribute"/> hands its operations over itself; any other assembly that references the pack is scanned.<br/>
-    /// When several assemblies implement one contract, the one that references every other wins;<br/>
-    /// when none does, the first by assembly name, then type name, is used and the Editor warns.
+    /// When several assemblies implement one contract, the one that references every other wins; when none does, the first by assembly name, then type name, is used and the Editor warns.
     /// </summary>
     internal static class OperationRegistry {
         private static Dictionary<Type, List<IOperation>> candidates;

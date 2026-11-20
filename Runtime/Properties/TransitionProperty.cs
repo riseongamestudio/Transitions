@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Sirenix.OdinInspector;
@@ -8,8 +8,7 @@ namespace RiseOn.Transitions {
     /// <summary>
     /// One public property of the target (<see cref="Member"/>), its rest value, and the modifier that changes it along the clock.<br/>
     /// On apply it hands the rest value to the modifier and writes what comes out; it is the only place that writes the member.<br/>
-    /// The rest value is the object's own: the value the member had before any transition first wrote it, kept until the object is destroyed;<br/>
-    /// or, with <see cref="CustomRest"/>, the one typed in.
+    /// The rest value is the object's own: the value the member had before any transition first wrote it, kept until the object is destroyed; or, with <see cref="CustomRest"/>, the one typed in.
     /// </summary>
     [Serializable]
     public sealed class TransitionProperty<T, V> : ITransitionNode<T>, IUntypedNode, IRestHolder<V> where T : class {

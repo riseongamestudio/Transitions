@@ -1,4 +1,4 @@
-using Sirenix.OdinInspector.Editor;
+﻿using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
 using RiseOn.Utils.Editor;
@@ -7,19 +7,16 @@ using UnityEngine;
 
 namespace RiseOn.Transitions.Editor {
     /// <summary>
-    /// Draws a <see cref="TransitionProperty&lt;T, V&gt;"/> in place of Odin's reference header: a foldout titled with the member it writes,<br/>
-    /// <typeparamref name="V"/> grayed out at the end of the row, then its fields; the member is picked when the property is added, so it has no field of its own.<br/>
-    /// A rest value typed in has a Capture button beside it, filling in the member's value on the object the property writes now:<br/>
-    /// its target's object, an unbound target's preview object, or what a branch reaches; in play mode, the rest value a transition keeps for it, once one wrote it.<br/>
+    /// Draws a <see cref="TransitionProperty&lt;T, V&gt;"/> in place of Odin's reference header: a foldout titled with the member it writes, <typeparamref name="V"/> grayed out at the end of the row, then its fields; the member is picked when the property is added, so it has no field of its own.<br/>
+    /// A rest value typed in has a Capture button beside it, filling in the member's value on the object the property writes now: its target's object, an unbound target's preview object, or what a branch reaches; in play mode, the rest value a transition keeps for it, once one wrote it.<br/>
     /// With no such object, the button is left out.<br/>
-    /// When the member cannot be written, the title is red and an error says why: none picked, not exactly one of that name on <typeparamref name="T"/><br/>
-    /// (renamed or removed since, or declared by two interfaces), or one of another type.
+    /// When the member cannot be written, the title is red and an error says why: none picked, not exactly one of that name on <typeparamref name="T"/> (renamed or removed since, or declared by two interfaces), or one of another type.
     /// </summary>
     [DrawerPriority(0, 0, 2001)]
     public sealed class TransitionPropertyDrawer<T, V> : OdinValueDrawer<TransitionProperty<T, V>> where T : class {
-        private static readonly GUIContent TYPE_TEXT = new(typeof(V).GetNiceName());
-        private static readonly Color ERROR_COLOR = new(1f, .4f, .35f);
-        private static readonly GUIContent CAPTURE_TEXT = new("Capture", "Fill in the value the member has now on the object, or the rest value a transition keeps for it in play mode.");
+        private static readonly GUIContent typeText = new(typeof(V).GetNiceName());
+        private static readonly Color errorColor = new(1f, .4f, .35f);
+        private static readonly GUIContent captureText = new("Capture", "Fill in the value the member has now on the object, or the rest value a transition keeps for it in play mode.");
 
         private static GUIStyle typeStyle;
 
@@ -46,10 +43,10 @@ namespace RiseOn.Transitions.Editor {
             typeStyle ??= new GUIStyle(EditorStyles.label) { alignment = TextAnchor.MiddleRight, normal = { textColor = SirenixGUIStyles.LeftAlignedGreyLabel.normal.textColor } };
 
             var row = SectionRows.MarkFirstRow(EditorGUILayout.GetControlRect());
-            var type = row.TakeFromRight(typeStyle.CalcSize(TYPE_TEXT).x);
-            GUI.Label(type, TYPE_TEXT, typeStyle);
+            var type = row.TakeFromRight(typeStyle.CalcSize(typeText).x);
+            GUI.Label(type, typeText, typeStyle);
 
-            if (isBroken) GUIHelper.PushContentColor(ERROR_COLOR);
+            if (isBroken) GUIHelper.PushContentColor(errorColor);
             Property.State.Expanded = SirenixEditorGUI.Foldout(ref row, GUIUtility.GetControlID(FocusType.Passive, row), title, Property.State.Expanded, true);
             if (isBroken) GUIHelper.PopContentColor();
         }
@@ -65,7 +62,7 @@ namespace RiseOn.Transitions.Editor {
             EditorGUILayout.BeginVertical();
             rest.Draw();
             EditorGUILayout.EndVertical();
-            if (GUILayout.Button(CAPTURE_TEXT, SirenixGUIStyles.Button, GUILayout.ExpandWidth(false), GUILayout.Height(EditorGUIUtility.singleLineHeight))) Capture(rest, source);
+            if (GUILayout.Button(captureText, SirenixGUIStyles.Button, GUILayout.ExpandWidth(false), GUILayout.Height(EditorGUIUtility.singleLineHeight))) Capture(rest, source);
             EditorGUILayout.EndHorizontal();
         }
 

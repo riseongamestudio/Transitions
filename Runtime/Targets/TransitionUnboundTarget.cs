@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -9,7 +9,8 @@ using Object = UnityEngine.Object;
 namespace RiseOn.Transitions {
     /// <summary>
     /// The nodes of a target without its object: written on whichever object is passed to <see cref="Apply"/>, such as each element a page covers.<br/>
-    /// <typeparamref name="T"/> is fixed in code, often an interface naming what the nodes reach. Each object keeps its own rest values.<br/>
+    /// <typeparamref name="T"/> is fixed in code, often an interface naming what the nodes reach.<br/>
+    /// Each object keeps its own rest values.<br/>
     /// A struct passed through an interface is boxed, so writes on it would be lost; it is reported once and skipped.
     /// </summary>
     [Serializable]

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -42,8 +42,7 @@ namespace RiseOn.Transitions.Editor {
         }
 
         /// <summary>
-        /// A copy of <paramref name="target"/> without its object, as a preset keeps it;<br/>
-        /// a target named after its object takes the object's name as its label, so the role keeps a name.
+        /// A copy of <paramref name="target"/> without its object, as a preset keeps it; a target named after its object takes the object's name as its label, so the role keeps a name.
         /// </summary>
         public static ITransitionTarget CopyRole(ITransitionTarget target) {
             var copy = Copy(target);

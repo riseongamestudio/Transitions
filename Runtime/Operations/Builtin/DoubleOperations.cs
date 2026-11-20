@@ -1,4 +1,4 @@
-namespace RiseOn.Transitions {
+﻿namespace RiseOn.Transitions {
     /// <summary>
     /// The pack's operations on Doubles.
     /// </summary>

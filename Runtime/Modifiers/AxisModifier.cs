@@ -1,12 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace RiseOn.Transitions {
     /// <summary>
-    /// Runs a number modifier on one axis of a struct, such as <c>y</c> of a <see cref="Vector2"/>, leaving the other axes as they are;<br/>
-    /// the axes come from <see cref="ValueAxes"/>.
+    /// Runs a number modifier on one axis of a struct, such as <c>y</c> of a <see cref="Vector2"/>, leaving the other axes as they are; the axes come from <see cref="ValueAxes"/>.
     /// </summary>
     [Serializable, TypeRegistryItem("Axis")]
     public sealed class AxisModifier<T, [Axes] TVector> : ITransitionModifier<T, TVector> where T : class where TVector : struct {

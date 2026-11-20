@@ -1,4 +1,4 @@
-using RiseOn.Utils.Editor;
+﻿using RiseOn.Utils.Editor;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
@@ -6,8 +6,7 @@ using UnityEngine;
 
 namespace RiseOn.Transitions.Editor {
     /// <summary>
-    /// Draws a None node of a list of nodes of <typeparamref name="T"/>, which the + button leaves when its pick is dropped, as Odin draws an empty reference field,<br/>
-    /// whose click picks the node the same way, the members the list already writes grayed out.
+    /// Draws a None node of a list of nodes of <typeparamref name="T"/>, which the + button leaves when its pick is dropped, as Odin draws an empty reference field, whose click picks the node the same way, the members the list already writes grayed out.
     /// </summary>
     [DrawerPriority(0, 0, 2001)]
     public sealed class NoneNodeDrawer<T> : OdinValueDrawer<ITransitionNode<T>> where T : class {

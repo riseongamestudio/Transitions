@@ -1,11 +1,12 @@
-using System;
+﻿using System;
 using RiseOn.Serializables;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace RiseOn.Transitions {
     /// <summary>
-    /// The sum of several sources; nothing when empty. Needs an <see cref="IAddition&lt;V&gt;"/> for <typeparamref name="V"/>.
+    /// The sum of several sources; nothing when empty.<br/>
+    /// Needs an <see cref="IAddition&lt;V&gt;"/> for <typeparamref name="V"/>.
     /// </summary>
     [Serializable, TypeRegistryItem("Sum", "Combine")]
     [RequiresOperation(typeof(IAddition<>))]

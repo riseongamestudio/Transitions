@@ -1,12 +1,10 @@
-using System;
+﻿using System;
 using System.Linq;
 using RiseOn.Utils;
 
 namespace RiseOn.Transitions {
     /// <summary>
-    /// Lets the picker of a modifier or source field build generic blocks, and narrows it to blocks that can run on the field's value type:<br/>
-    /// a type parameter marked <see cref="AxesAttribute"/> takes only structs with registered axes,<br/>
-    /// and a block whose <see cref="RequiresOperationAttribute"/> has no implementation for the value type is grayed out.
+    /// Lets the picker of a modifier or source field build generic blocks, and narrows it to blocks that can run on the field's value type: a type parameter marked <see cref="AxesAttribute"/> takes only structs with registered axes, and a block whose <see cref="RequiresOperationAttribute"/> has no implementation for the value type is grayed out.
     /// </summary>
     [AttributeUsage(AttributeTargets.Interface)]
     internal sealed class TransitionBlockAttribute : AllowGenericsAttribute {

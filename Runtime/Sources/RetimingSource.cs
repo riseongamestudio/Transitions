@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using LitMotion;
 using RiseOn.Utils.LitMotion;
 using Sirenix.OdinInspector;
@@ -6,8 +6,7 @@ using UnityEngine;
 
 namespace RiseOn.Transitions {
     /// <summary>
-    /// Runs another source on its own clock: the part <see cref="range"/> of the clock stretched over 0 to 1,<br/>
-    /// then repeated, mirrored (there and back), eased and reversed, in that order.
+    /// Runs another source on its own clock: the part <see cref="range"/> of the clock stretched over 0 to 1, then repeated, mirrored (there and back), eased and reversed, in that order.
     /// </summary>
     [Serializable, TypeRegistryItem("Retiming", "Combine")]
     public sealed class RetimingSource<T, V> : ITransitionSource<T, V> where T : class {

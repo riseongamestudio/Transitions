@@ -1,4 +1,4 @@
-using Sirenix.Utilities;
+﻿using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -6,13 +6,11 @@ using Object = UnityEngine.Object;
 
 namespace RiseOn.Transitions.Editor {
     /// <summary>
-    /// Odin's object field for an object targeted as <c>T</c>, a target's or an unbound target's preview object:<br/>
-    /// it takes a <c>T</c> or what holds one, a GameObject or a component with a <c>T</c> component beside it, as <c>T</c> may be an interface,<br/>
-    /// and names <c>T</c> in place of the object's own type, which Odin names.
+    /// Odin's object field for an object targeted as <c>T</c>, a target's or an unbound target's preview object: it takes a <c>T</c> or what holds one, a GameObject or a component with a <c>T</c> component beside it, as <c>T</c> may be an interface, and names <c>T</c> in place of the object's own type, which Odin names.
     /// </summary>
     internal static class TargetFieldUtils {
         // The room Odin's object field keeps for its button opening the object in an inspector of its own, the pencil.
-        private const float OPEN_BUTTON_WIDTH = 20f;
+        private const float OpenButtonWidth = 20f;
 
         /// <summary>
         /// Draws the field holding <paramref name="current"/>; true when a pick changed it, with the <typeparamref name="T"/> picked, null for None.<br/>
@@ -49,7 +47,7 @@ namespace RiseOn.Transitions.Editor {
             var icon = current != null ? EditorGUIUtility.ObjectContent(current, current.GetType()).image : null;
 
             var title = field;
-            title.width -= field.height + OPEN_BUTTON_WIDTH;
+            title.width -= field.height + OpenButtonWidth;
             title = title.Padding(0f, 1.5f);
             title.position += new Vector2(.5f, .5f);
             if (icon == null) title.x += 2f;

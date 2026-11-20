@@ -1,11 +1,12 @@
-using System;
+﻿using System;
 using RiseOn.Serializables;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace RiseOn.Transitions {
     /// <summary>
-    /// The product of several sources; nothing when empty. Needs an <see cref="IMultiplication&lt;V&gt;"/> for <typeparamref name="V"/>.
+    /// The product of several sources; nothing when empty.<br/>
+    /// Needs an <see cref="IMultiplication&lt;V&gt;"/> for <typeparamref name="V"/>.
     /// </summary>
     [Serializable, TypeRegistryItem("Product", "Combine")]
     [RequiresOperation(typeof(IMultiplication<>))]
